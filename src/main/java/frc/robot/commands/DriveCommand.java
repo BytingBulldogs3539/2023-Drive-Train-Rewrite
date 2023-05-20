@@ -29,14 +29,19 @@ public class DriveCommand extends CommandBase {
   @Override
   public void execute() {
     //Transform sticks to translation2d while matching joystick xy to field xy (they are opposite)
-    Translation2d joystickRight = new Translation2d(-RobotContainer.driverController.getRightY(), -RobotContainer.driverController.getRightX());
-    Translation2d joystickLeft = new Translation2d(-RobotContainer.driverController.getRightY(), -RobotContainer.driverController.getRightX());
+    Translation2d joystickRight = new Translation2d(-RobotContainer.driverController.getRightX(), -RobotContainer.driverController.getRightY());
+    Translation2d joystickLeft = new Translation2d(-RobotContainer.driverController.getLeftX(), -RobotContainer.driverController.getLeftY());
 
     joystickRight = modifyJoystick(joystickRight);
     joystickLeft = modifyJoystick(joystickLeft);
 
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(), joystickRight.getX(),driveSubsystem.swerveController.getPigeon2().getRotation2d());
+    System.out.println(joystickRight.getX() + " " + joystickRight.getY());
+    System.out.println(joystickLeft.getX() + " " + joystickLeft.getY());
 
+    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(), joystickRight.getX(),Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue()));
+
+    System.out.println("Chassis "+chassisSpeeds.vxMetersPerSecond+" " + chassisSpeeds.vyMetersPerSecond);
+    
     driveSubsystem.drive(chassisSpeeds);
    }
 

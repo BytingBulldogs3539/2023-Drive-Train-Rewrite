@@ -58,7 +58,7 @@ public class DriveSubsystem extends SubsystemBase {
 				DriveConstants.swerveModuleSlipCurrent,
 				steerGains, // Use the specified steer gains
 				driveGains, // Use the specified drive gains
-				false // CANcoder not reversed from the steer motor. For WCP Swerve X this should be
+				true // CANcoder not reversed from the steer motor. For WCP Swerve X this should be
 						// true.
 		);
 
@@ -127,7 +127,7 @@ public class DriveSubsystem extends SubsystemBase {
 		//If we should be running a profile use those chassisspeeds instead.
         if (driveSignalOpt.isPresent()) {
             chassisSpeeds = driveSignalOpt.get();
-			swerveController.driveRobotCentric(chassisSpeeds);
+			//swerveController.driveRobotCentric(chassisSpeeds);
         }
 
 		swerveController.driveRobotCentric(chassisSpeeds);

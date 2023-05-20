@@ -10,6 +10,7 @@ import org.bytingbulldogs.bulldoglibrary.INIConfiguration.BBConstants;
 public class DriveConstants extends BBConstants {
     public DriveConstants() {
         super("/home/lvuser/DriveConstants.ini", true);
+        save();
     }
 
     public static double wheelTrackWidth = 0.5969; // In meters

@@ -21,7 +21,7 @@ public class RobotContainer {
 
   public static CommandXboxController driverController = new CommandXboxController(1);
 
-  public static SendableChooser<Command> chooser;
+  public static SendableChooser<Command> chooser = new SendableChooser<Command>();
   
   public RobotContainer() {
     putAutons();
