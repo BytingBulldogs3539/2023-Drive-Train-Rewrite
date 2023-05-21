@@ -35,7 +35,6 @@ public class DriveSubsystem extends SubsystemBase {
 
 	private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-
 	public DriveSubsystem() {
 		tab = Shuffleboard.getTab("Drivetrain");
 
@@ -93,43 +92,59 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveController = new CTRSwerveDrivetrain(tab, driveTrainConstants, frontLeft, frontRight, backLeft,
 				backRight);
 
-
+		swerveController.setGyro(0);
 
 		DrivetrainFeedforwardConstants FEEDFORWARD_CONSTANTS = new DrivetrainFeedforwardConstants(
 				DriveConstants.TranslationkV,
-				DriveConstants.TranslationkV, DriveConstants.TranslationkS);
+				DriveConstants.TranslationkA, DriveConstants.TranslationkS);
 
 		follower = new HolonomicMotionProfiledTrajectoryFollower(
-				new PidConstants(DriveConstants.TranslationkP, DriveConstants.TranslationkI, DriveConstants.TranslationkD), new PidConstants(DriveConstants.RotationkP, DriveConstants.RotationkI, DriveConstants.RotationkD),
+				new PidConstants(DriveConstants.TranslationkP, DriveConstants.TranslationkI,
+						DriveConstants.TranslationkD),
+				new PidConstants(DriveConstants.RotationkP, DriveConstants.RotationkI, DriveConstants.RotationkD),
 				new HolonomicFeedforward(FEEDFORWARD_CONSTANTS));
+
+		tab.addNumber("Requested X", () -> {
+			if (follower.getLastState() != null) {
+				return follower.getLastState().getPathState().getPose2d().getX();
+			}
+			return 0.0;
+		});
+		tab.addNumber("Requested Y", () -> {
+			if (follower.getLastState() != null) {
+				return follower.getLastState().getPathState().getPose2d().getY();
+			}
+			return 0.0;
+		});
+
+		tab.addNumber("Chassis X Speed", ()->m_chassisSpeeds.vxMetersPerSecond);
+		
+		tab.addNumber("Chassis Y Speed", ()->m_chassisSpeeds.vyMetersPerSecond);
 
 		setDefaultCommand(new DriveCommand(this));
 	}
 
-	public HolonomicMotionProfiledTrajectoryFollower getFollower()
-	{
+	public HolonomicMotionProfiledTrajectoryFollower getFollower() {
 		return follower;
 	}
 
 	public void drive(ChassisSpeeds chassisSpeeds) {
 		m_chassisSpeeds = chassisSpeeds;
 	}
-	public void resetRobotPose(Trajectory trajectory)
-	{
+
+	public void resetRobotPose(Trajectory trajectory) {
 		swerveController.resetPosition(trajectory.calculate(0.0).getPathState().getPose2d());
 	}
 
 	@Override
 	public void periodic() {
-		ChassisSpeeds chassisSpeeds = m_chassisSpeeds;
-		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(), Robot.kDefaultPeriod);
+		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
+				Robot.kDefaultPeriod);
+		// If we should be running a profile use those chassisspeeds instead.
+		if (driveSignalOpt.isPresent()) {
+			m_chassisSpeeds = driveSignalOpt.get();
+		}
 
-		//If we should be running a profile use those chassisspeeds instead.
-        if (driveSignalOpt.isPresent()) {
-            chassisSpeeds = driveSignalOpt.get();
-			//swerveController.driveRobotCentric(chassisSpeeds);
-        }
-
-		swerveController.driveRobotCentric(chassisSpeeds);
+		swerveController.driveRobotCentric(m_chassisSpeeds);
 	}
 }
