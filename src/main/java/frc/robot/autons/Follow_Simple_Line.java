@@ -7,6 +7,7 @@ package frc.robot.autons;
 import org.frcteam3539.CTRE_Swerve_Lib.control.MaxAccelerationConstraint;
 import org.frcteam3539.CTRE_Swerve_Lib.control.MaxVelocityConstraint;
 import org.frcteam3539.CTRE_Swerve_Lib.control.SimplePathBuilder;
+import org.frcteam3539.CTRE_Swerve_Lib.control.SplinePathBuilder;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.control.TrajectoryConstraint;
 
@@ -37,7 +38,7 @@ public class Follow_Simple_Line extends SequentialCommandGroup {
 
   public TrajectoryConstraint[] getConstraints() {
     TrajectoryConstraint[] constraints = { (TrajectoryConstraint) new MaxAccelerationConstraint(1),
-        (TrajectoryConstraint) new MaxVelocityConstraint(2) };
+        (TrajectoryConstraint) new MaxVelocityConstraint(2)};
     return constraints;
   }
 }
