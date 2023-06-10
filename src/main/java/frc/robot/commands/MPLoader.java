@@ -30,24 +30,23 @@ public class MPLoader {
     }
 
     public MPLoader(String filename, boolean debug) {
-        try {
-            trajectories = getCommandSequence(filename, false ,debug);
-        } catch (IOException e) {
-        }
+        trajectories = getCommandSequence(filename, false ,debug);
+    }
 
+    public MPLoader(BBPath path) {
+        trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), false);
+    }
+    public MPLoader(BBPath path, boolean debug) {
+        trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), debug);
+    }
+
+    public MPLoader(String filename,boolean isWindows,boolean debug) {
+        trajectories = getCommandSequence(filename, isWindows ,debug);
     }
 
     public Pose2d getStartPose()
     {
         return startPose;
-    }
-
-    public MPLoader(String filename,boolean isWindows,boolean debug) {
-        try {
-            trajectories = getCommandSequence(filename, isWindows ,debug);
-        } catch (IOException e) {
-        }
-
     }
 
     public Trajectory getNextTrajectory() {
@@ -76,7 +75,8 @@ public class MPLoader {
         return trajectories.length;
     }
 
-    private Trajectory[] getCommandSequence(String filename,boolean isWindows, boolean debug) throws IOException {
+    private Trajectory[] getCommandSequence(String filename,boolean isWindows, boolean debug) 
+    {
         if(!isWindows)
         {
             filename = "/home/lvuser/profiles/" + filename;
@@ -139,7 +139,7 @@ public class MPLoader {
     // Fill a command sequence from a pre-compiled or parsed double array
     // (recommended for comp)
     public Trajectory[] getCommandSequence(double[][][] paths, double[][] constraints, boolean debug)
-            throws IOException {
+    {
 
         if (debug)
             System.out.println("received:");
