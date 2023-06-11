@@ -4,18 +4,10 @@ package frc.robot.commands;
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import org.frcteam3539.CTRE_Swerve_Lib.control.CentripetalRadiusAccelerationConstraint;
-import org.frcteam3539.CTRE_Swerve_Lib.control.MaxAccelerationConstraint;
-import org.frcteam3539.CTRE_Swerve_Lib.control.MaxVelocityConstraint;
-import org.frcteam3539.CTRE_Swerve_Lib.control.Path;
-import org.frcteam3539.CTRE_Swerve_Lib.control.SimplePathBuilder;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Path.State;
 
@@ -29,7 +21,7 @@ public class MPLoaderVisualize {
             writer = new BufferedWriter(new FileWriter("C:\\Users\\camco\\Desktop\\mp1Out.txt", false));
 
             MPLoader loader = new MPLoader("C:\\Users\\camco\\Desktop\\mp1.txt", true, true);
-            
+
             for (Trajectory trajectory : loader.getTrajectories()) {
                 for (double i = 0; i < trajectory.getDuration(); i += 0.02) {
 
@@ -39,7 +31,7 @@ public class MPLoaderVisualize {
                 }
             }
             writer.close();
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         }

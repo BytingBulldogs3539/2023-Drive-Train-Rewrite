@@ -14,29 +14,29 @@ import frc.robot.autons.*;
 import frc.robot.constants.*;
 
 public class RobotContainer {
-  public static DriveConstants driveConstants = new DriveConstants();
-  public static IDConstants idConstants = new IDConstants();
-  
-  public static DriveSubsystem driveSubsystem = new DriveSubsystem();
+	public static DriveConstants driveConstants = new DriveConstants();
+	public static IDConstants idConstants = new IDConstants();
 
-  public static CommandXboxController driverController = new CommandXboxController(1);
+	public static DriveSubsystem driveSubsystem = new DriveSubsystem();
 
-  public static SendableChooser<Command> chooser = new SendableChooser<Command>();
-  
-  public RobotContainer() {
-    putAutons();
-    configureBindings();
-  }
+	public static CommandXboxController driverController = new CommandXboxController(1);
 
-  private void putAutons()
-  {
-    chooser.setDefaultOption("Follow Simple Line", new Follow_Simple_Line());
-    SmartDashboard.putData(chooser);
-  }
+	public static SendableChooser<Command> chooser = new SendableChooser<Command>();
 
-  private void configureBindings() {}
+	public RobotContainer() {
+		putAutons();
+		configureBindings();
+	}
 
-  public Command getAutonomousCommand() {
-    return chooser.getSelected();
-  }
+	private void putAutons() {
+		chooser.setDefaultOption("Follow Simple Line", new Follow_Simple_Line());
+		SmartDashboard.putData(chooser);
+	}
+
+	private void configureBindings() {
+	}
+
+	public Command getAutonomousCommand() {
+		return chooser.getSelected();
+	}
 }

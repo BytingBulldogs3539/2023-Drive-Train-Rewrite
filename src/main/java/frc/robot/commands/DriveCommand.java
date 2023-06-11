@@ -12,67 +12,72 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
-  /** Creates a new DriveCommand. */
-  DriveSubsystem driveSubsystem;
-  public DriveCommand(DriveSubsystem driveSubsystem) {
-    addRequirements(driveSubsystem);
-    this.driveSubsystem = driveSubsystem;
-    // Use addRequirements() here to declare subsystem dependencies.
-  }
+	/** Creates a new DriveCommand. */
+	DriveSubsystem driveSubsystem;
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-  }
+	public DriveCommand(DriveSubsystem driveSubsystem) {
+		addRequirements(driveSubsystem);
+		this.driveSubsystem = driveSubsystem;
+		// Use addRequirements() here to declare subsystem dependencies.
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    //Transform sticks to translation2d while matching joystick xy to field xy (they are opposite)
-    Translation2d joystickRight = new Translation2d(-RobotContainer.driverController.getRightY(), -RobotContainer.driverController.getRightX());
-    Translation2d joystickLeft = new Translation2d(-RobotContainer.driverController.getLeftY(), -RobotContainer.driverController.getLeftX());
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+	}
 
-    joystickRight = modifyJoystick(joystickRight);
-    joystickLeft = modifyJoystick(joystickLeft);
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+		// Transform sticks to translation2d while matching joystick xy to field xy
+		// (they are opposite)
+		Translation2d joystickRight = new Translation2d(-RobotContainer.driverController.getRightY(),
+				-RobotContainer.driverController.getRightX());
+		Translation2d joystickLeft = new Translation2d(-RobotContainer.driverController.getLeftY(),
+				-RobotContainer.driverController.getLeftX());
 
-    Rotation2d rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(), joystickRight.getY(),rot);
-    
-    driveSubsystem.drive(chassisSpeeds);
-   }
+		joystickRight = modifyJoystick(joystickRight);
+		joystickLeft = modifyJoystick(joystickLeft);
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-  }
+		Rotation2d rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
+		ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(),
+				joystickRight.getY(), rot);
 
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
-  }
+		driveSubsystem.drive(chassisSpeeds);
+	}
 
-  private static Translation2d modifyJoystick(Translation2d joystick) {
-    // Deadband
-    joystick = new Translation2d(deadband(joystick.getX(), 0.05),deadband(joystick.getY(), 0.05));
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+	}
 
-    Rotation2d rotation = joystick.getAngle();
-    double distance = joystick.getDistance(new Translation2d());
-    
-    double distanceModified = Math.copySign(Math.pow(distance, 3), distance);
+	private static double deadband(double value, double deadband) {
+		if (Math.abs(value) > deadband) {
+			if (value > 0.0) {
+				return (value - deadband) / (1.0 - deadband);
+			} else {
+				return (value + deadband) / (1.0 - deadband);
+			}
+		} else {
+			return 0.0;
+		}
+	}
 
-    return new Translation2d(distanceModified, rotation);
-    }
+	private static Translation2d modifyJoystick(Translation2d joystick) {
+		// Deadband
+		joystick = new Translation2d(deadband(joystick.getX(), 0.05), deadband(joystick.getY(), 0.05));
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+		Rotation2d rotation = joystick.getAngle();
+		double distance = joystick.getDistance(new Translation2d());
+
+		double distanceModified = Math.copySign(Math.pow(distance, 3), distance);
+
+		return new Translation2d(distanceModified, rotation);
+	}
+
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return false;
+	}
 }

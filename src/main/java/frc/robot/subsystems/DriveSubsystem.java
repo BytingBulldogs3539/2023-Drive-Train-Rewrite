@@ -119,9 +119,9 @@ public class DriveSubsystem extends SubsystemBase {
 			return 0.0;
 		});
 
-		tab.addNumber("Chassis X Speed", ()->m_chassisSpeeds.vxMetersPerSecond);
-		
-		tab.addNumber("Chassis Y Speed", ()->m_chassisSpeeds.vyMetersPerSecond);
+		tab.addNumber("Chassis X Speed", () -> m_chassisSpeeds.vxMetersPerSecond);
+
+		tab.addNumber("Chassis Y Speed", () -> m_chassisSpeeds.vyMetersPerSecond);
 
 		setDefaultCommand(new DriveCommand(this));
 	}

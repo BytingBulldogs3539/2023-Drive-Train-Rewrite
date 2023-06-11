@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import org.frcteam3539.CTRE_Swerve_Lib.control.CentripetalRadiusAccelerationConstraint;
@@ -25,42 +24,38 @@ public class MPLoader {
     private Pose2d startPose = new Pose2d();
     private int currentTrajectory = -1;
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
     }
 
     public MPLoader(String filename, boolean debug) {
-        trajectories = getCommandSequence(filename, false ,debug);
+        trajectories = getCommandSequence(filename, false, debug);
     }
 
     public MPLoader(BBPath path) {
         trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), false);
     }
+
     public MPLoader(BBPath path, boolean debug) {
         trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), debug);
     }
 
-    public MPLoader(String filename,boolean isWindows,boolean debug) {
-        trajectories = getCommandSequence(filename, isWindows ,debug);
+    public MPLoader(String filename, boolean isWindows, boolean debug) {
+        trajectories = getCommandSequence(filename, isWindows, debug);
     }
 
-    public Pose2d getStartPose()
-    {
+    public Pose2d getStartPose() {
         return startPose;
     }
 
     public Trajectory getNextTrajectory() {
-        if(trajectories == null)
-        {
+        if (trajectories == null) {
             return null;
         }
-        if (trajectories.length == 0)
-        {
+        if (trajectories.length == 0) {
             return null;
         }
         currentTrajectory++;
-        if(currentTrajectory > trajectories.length-1)
-        {
+        if (currentTrajectory > trajectories.length - 1) {
             return null;
         }
         return trajectories[currentTrajectory];
@@ -70,15 +65,12 @@ public class MPLoader {
         return trajectories;
     }
 
-    public int getTrajectoryCount()
-    {
+    public int getTrajectoryCount() {
         return trajectories.length;
     }
 
-    private Trajectory[] getCommandSequence(String filename,boolean isWindows, boolean debug) 
-    {
-        if(!isWindows)
-        {
+    private Trajectory[] getCommandSequence(String filename, boolean isWindows, boolean debug) {
+        if (!isWindows) {
             filename = "/home/lvuser/profiles/" + filename;
         }
 
@@ -138,8 +130,7 @@ public class MPLoader {
 
     // Fill a command sequence from a pre-compiled or parsed double array
     // (recommended for comp)
-    public Trajectory[] getCommandSequence(double[][][] paths, double[][] constraints, boolean debug)
-    {
+    public Trajectory[] getCommandSequence(double[][][] paths, double[][] constraints, boolean debug) {
 
         if (debug)
             System.out.println("received:");
@@ -155,9 +146,8 @@ public class MPLoader {
 
         Trajectory[] sequence = new Trajectory[paths.length];
 
-        if(paths.length == 0)
-        {
-            return new Trajectory[0] ;
+        if (paths.length == 0) {
+            return new Trajectory[0];
         }
 
         startPose = new Pose2d(

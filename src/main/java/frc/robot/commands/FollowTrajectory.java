@@ -11,29 +11,29 @@ import frc.robot.subsystems.DriveSubsystem;
 
 public class FollowTrajectory extends CommandBase {
 
-  private final DriveSubsystem drivetrain;
+    private final DriveSubsystem drivetrain;
 
-  private final Trajectory trajectory;
+    private final Trajectory trajectory;
 
-  public FollowTrajectory(DriveSubsystem drivetrain, Trajectory trajectory) {
-      this.drivetrain = drivetrain;
-      this.trajectory = trajectory;
+    public FollowTrajectory(DriveSubsystem drivetrain, Trajectory trajectory) {
+        this.drivetrain = drivetrain;
+        this.trajectory = trajectory;
 
-      addRequirements(drivetrain);
-  }
+        addRequirements(drivetrain);
+    }
 
-  @Override
-  public void initialize() {
-      drivetrain.getFollower().follow(trajectory);
-  }
+    @Override
+    public void initialize() {
+        drivetrain.getFollower().follow(trajectory);
+    }
 
-  @Override
-  public void end(boolean interrupted) {
-      drivetrain.getFollower().cancel();
-  }
+    @Override
+    public void end(boolean interrupted) {
+        drivetrain.getFollower().cancel();
+    }
 
-  @Override
-  public boolean isFinished() {
-      return drivetrain.getFollower().getCurrentTrajectory().isEmpty();
-  }
+    @Override
+    public boolean isFinished() {
+        return drivetrain.getFollower().getCurrentTrajectory().isEmpty();
+    }
 }

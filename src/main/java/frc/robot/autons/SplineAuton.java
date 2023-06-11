@@ -14,19 +14,19 @@ import frc.robot.commands.MPLoader;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SplineAuton extends SequentialCommandGroup {
-  /** Creates a new SplineAuton. */
-  MPLoader loader = new MPLoader("", false);
+	/** Creates a new SplineAuton. */
+	MPLoader loader = new MPLoader("", false);
 
-  private Command[] sequence = {
-            // Setup
-            new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
-            new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
-            new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
-        };
+	private Command[] sequence = {
+			// Setup
+			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
+	};
 
-  public SplineAuton() {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
-    addCommands(sequence);
-  }
+	public SplineAuton() {
+		// Add your commands in the addCommands() call, e.g.
+		// addCommands(new FooCommand(), new BarCommand());
+		addCommands(sequence);
+	}
 }
