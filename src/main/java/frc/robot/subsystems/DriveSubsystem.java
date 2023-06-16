@@ -5,9 +5,7 @@
 package frc.robot.subsystems;
 
 import org.frcteam3539.CTRE_Swerve_Lib.control.HolonomicMotionProfiledTrajectoryFollower;
-import org.frcteam3539.CTRE_Swerve_Lib.control.Path;
 import org.frcteam3539.CTRE_Swerve_Lib.control.PidConstants;
-import org.frcteam3539.CTRE_Swerve_Lib.control.SplinePathBuilder;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.CTRSwerveDrivetrain;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveConstantsCreator;
@@ -15,11 +13,13 @@ import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveTrainConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveModuleConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.DrivetrainFeedforwardConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.HolonomicFeedforward;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 
 import com.ctre.phoenixpro.configs.Slot0Configs;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -38,6 +38,7 @@ public class DriveSubsystem extends SubsystemBase {
 	private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
 	public DriveSubsystem() {
+		// LoggedPowerDistribution.getInstance(moduleId, moduleType)
 		tab = Shuffleboard.getTab("Drivetrain");
 
 		Slot0Configs steerGains = new Slot0Configs();
@@ -141,12 +142,21 @@ public class DriveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
-				Robot.kDefaultPeriod);
+				Robot.defaultPeriodSecs);
 		// If we should be running a profile use those chassisspeeds instead.
 		if (driveSignalOpt.isPresent()) {
 			m_chassisSpeeds = driveSignalOpt.get();
 		}
 
 		swerveController.driveRobotCentric(m_chassisSpeeds);
+		log();
+	}
+
+	public void log() {
+		Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
+		Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
+				new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,
+						m_chassisSpeeds.omegaRadiansPerSecond });
+		
 	}
 }
