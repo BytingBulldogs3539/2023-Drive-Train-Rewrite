@@ -26,7 +26,11 @@ public class MPLoader {
 
     public static void main(String[] args) {
     }
-
+    /**
+     * 
+     * @param filename File name with extension but no directory.
+     * @param debug use debug prints
+     */
     public MPLoader(String filename, boolean debug) {
         trajectories = getCommandSequence(filename, false, debug);
     }

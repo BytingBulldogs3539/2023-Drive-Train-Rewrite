@@ -14,12 +14,10 @@ import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveModuleConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.DrivetrainFeedforwardConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.HolonomicFeedforward;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggedPowerDistribution;
 
 import com.ctre.phoenixpro.configs.Slot0Configs;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
