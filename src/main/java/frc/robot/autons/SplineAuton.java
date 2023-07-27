@@ -4,7 +4,10 @@
 
 package frc.robot.autons;
 
+import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.FollowTrajectory;
@@ -15,13 +18,17 @@ import frc.robot.commands.MPLoader;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SplineAuton extends SequentialCommandGroup {
 	/** Creates a new SplineAuton. */
-	MPLoader loader = new MPLoader("", false);
-
+	MPLoader loader = new MPLoader("test.txt", true);
+	Trajectory t1 = loader.getNextTrajectory();
 	private Command[] sequence = {
 			// Setup
-			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+			new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(t1)),
+			new FollowTrajectory(RobotContainer.driveSubsystem, t1),
 			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
 			new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
+
+			//new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+			//new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
 	};
 
 	public SplineAuton() {

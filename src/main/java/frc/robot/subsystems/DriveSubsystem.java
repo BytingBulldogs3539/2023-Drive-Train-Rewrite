@@ -151,6 +151,8 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
+		if(follower.getLastState()!=null)
+			Logger.getInstance().recordOutput("/DriveTrain/Trajectory",follower.getLastState().getPathState().getPose2d());
 		Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
 		Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
 				new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,

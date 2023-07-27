@@ -31,6 +31,8 @@ public class RobotContainer {
 
 	private void putAutons() {
 		chooser.setDefaultOption("Follow Simple Line", new Follow_Simple_Line());
+		chooser.setDefaultOption("Follow Simple Spline", new SplineAuton());
+
 		SmartDashboard.putData(chooser);
 	}
 
