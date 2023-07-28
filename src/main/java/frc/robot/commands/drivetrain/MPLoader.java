@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drivetrain;
 
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
@@ -32,23 +32,33 @@ public class MPLoader {
      * @param debug use debug prints
      */
     public MPLoader(String filename, boolean debug) {
-        trajectories = getCommandSequence(filename, false, debug);
+        trajectories = getTrajectories(filename, false, debug);
     }
 
     public MPLoader(BBPath path) {
-        trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), false);
+        trajectories = getTrajectories(path.getPaths(), path.getConstraints(), false);
     }
 
     public MPLoader(BBPath path, boolean debug) {
-        trajectories = getCommandSequence(path.getPaths(), path.getConstraints(), debug);
+        trajectories = getTrajectories(path.getPaths(), path.getConstraints(), debug);
     }
 
     public MPLoader(String filename, boolean isWindows, boolean debug) {
-        trajectories = getCommandSequence(filename, isWindows, debug);
+        trajectories = getTrajectories(filename, isWindows, debug);
     }
 
     public Pose2d getStartPose() {
         return startPose;
+    }
+
+    public Trajectory getFirstTrajectory() {
+        if (trajectories == null) {
+            return null;
+        }
+        if (trajectories.length == 0) {
+            return null;
+        }
+        return trajectories[0];
     }
 
     public Trajectory getNextTrajectory() {
@@ -73,7 +83,7 @@ public class MPLoader {
         return trajectories.length;
     }
 
-    private Trajectory[] getCommandSequence(String filename, boolean isWindows, boolean debug) {
+    private Trajectory[] getTrajectories(String filename, boolean isWindows, boolean debug) {
         if (!isWindows) {
             filename = "/home/lvuser/profiles/" + filename;
         }
@@ -129,12 +139,12 @@ public class MPLoader {
             };
         }
 
-        return getCommandSequence(pathsParsed, constraintsParsed, debug);
+        return getTrajectories(pathsParsed, constraintsParsed, debug);
     }
 
     // Fill a command sequence from a pre-compiled or parsed double array
     // (recommended for comp)
-    public Trajectory[] getCommandSequence(double[][][] paths, double[][] constraints, boolean debug) {
+    public Trajectory[] getTrajectories(double[][][] paths, double[][] constraints, boolean debug) {
 
         if (debug)
             System.out.println("received:");
