@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Launch DriveCommand",
+      "request": "launch",
+      "mainClass": "frc.robot.commands.drivetrain.DriveCommand",
+      "projectName": "2023-Drive-Train-Rewrite"
+    },
+    {
+      "type": "java",
       "name": "Launch ArmTrajectoryGenerator",
       "request": "launch",
       "mainClass": "frc.robot.utilities.ArmTrajectoryGenerator",

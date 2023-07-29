@@ -5,13 +5,13 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 
 public class DisableBreakMode extends CommandBase {
   /** Creates a new DisableBreakMode. */
-  ElevatorSubsystem elevSub;
+  ArmSubsystem elevSub;
 
-  public DisableBreakMode(ElevatorSubsystem elevSub) {
+  public DisableBreakMode(ArmSubsystem elevSub) {
     this.elevSub = elevSub;
     addRequirements(elevSub);
     // Use addRequirements() here to declare subsystem dependencies.

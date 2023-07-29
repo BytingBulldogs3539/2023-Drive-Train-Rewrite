@@ -5,14 +5,14 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Sides;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.Sides;
 
 public class SetArmSide extends CommandBase {
   /** Creates a new SetArmHeight. */
   Sides side;
-  ElevatorSubsystem elevSub;
-  public SetArmSide(ElevatorSubsystem elevSub,Sides side) {
+  ArmSubsystem elevSub;
+  public SetArmSide(ArmSubsystem elevSub,Sides side) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevSub = elevSub;
     this.side = side;

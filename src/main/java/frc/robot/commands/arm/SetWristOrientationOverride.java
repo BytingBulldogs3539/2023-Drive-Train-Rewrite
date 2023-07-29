@@ -5,14 +5,14 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Wrist;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.Wrist;
 
 public class SetWristOrientationOverride extends CommandBase {
   /** Creates a new SetArmHeight. */
   Wrist wrist;
-  ElevatorSubsystem elevSub;
-  public SetWristOrientationOverride(ElevatorSubsystem elevSub, Wrist wrist) {
+  ArmSubsystem elevSub;
+  public SetWristOrientationOverride(ArmSubsystem elevSub, Wrist wrist) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevSub = elevSub;
     this.wrist = wrist;

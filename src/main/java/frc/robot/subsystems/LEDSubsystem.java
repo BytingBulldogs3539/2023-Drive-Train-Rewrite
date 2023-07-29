@@ -8,9 +8,8 @@ import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
 import frc.robot.constants.*;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ElevatorSubsystem.Arm;
-import frc.robot.subsystems.ElevatorSubsystem.Wrist;
+import frc.robot.subsystems.ArmSubsystem.Arm;
+import frc.robot.subsystems.ArmSubsystem.Wrist;
 
 public class LEDSubsystem {
     boolean enabled;
@@ -41,9 +40,9 @@ public class LEDSubsystem {
     public LEDState state;
     private LEDState savedState;
 
-    ElevatorSubsystem elevatorSub;
+    ArmSubsystem elevatorSub;
 
-    public LEDSubsystem(boolean enabled, ElevatorSubsystem elevatorSub)  {
+    public LEDSubsystem(boolean enabled, ArmSubsystem elevatorSub)  {
         this.elevatorSub = elevatorSub;
 
         this.enabled = enabled;

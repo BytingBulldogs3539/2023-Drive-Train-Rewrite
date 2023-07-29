@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.*;
-import frc.robot.RobotContainer;
 import frc.robot.commands.intake.RunGroundIntake;
 
 public class IntakeSubsystem extends SubsystemBase {

@@ -5,15 +5,15 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Arm;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmSubsystem.Arm;
 
 public class SetArmHeight extends CommandBase {
   /** Creates a new SetArmHeight. */
   Arm arm;
-  ElevatorSubsystem elevSub;
+  ArmSubsystem elevSub;
 
-  public SetArmHeight(ElevatorSubsystem elevSub, Arm arm) {
+  public SetArmHeight(ArmSubsystem elevSub, Arm arm) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevSub = elevSub;
     this.arm = arm;

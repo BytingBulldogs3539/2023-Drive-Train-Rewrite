@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifier.GeneralPin;
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -20,20 +19,23 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import java.awt.geom.Point2D;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.*;
 import frc.robot.utilities.ArmTrajectoryGenerator;
 import frc.robot.utilities.ArmTrajectoryFollower;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class ArmSubsystem extends SubsystemBase {
 
 	public enum Arm {
 		high, middle, low, intake, HumanPlayer, groundIntake, cubeLowIntake
@@ -48,11 +50,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 	}
 
 	CANifier canifier;
-	TalonFX elevatorMotor;
+	TalonFX extensionMotor;
 	TalonSRX wrist;
 	CANCoder wristEncoder;
-	TalonFX elevatorRotationMotor;
-	CANCoder elevatorRotationEncoder;
+	TalonFX rotationMotor;
+	CANCoder rotationEncoder;
 	PIDController m_rController;
 	PIDController m_eController;
 
@@ -62,61 +64,83 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 	ArmTrajectoryGenerator trajectoryHandler;
 
-	ShuffleboardTab elevatorTab = Shuffleboard.getTab("Elevator");
+	ShuffleboardTab armTab = Shuffleboard.getTab("Elevator");
+
+	// A representation of the arm.
+	Mechanism2d realArmMech = new Mechanism2d(ElevatorConstants.ElevatorMaxExtension * 2,
+			ElevatorConstants.ElevatorMaxExtension * 2);
+	MechanismRoot2d realRoot = realArmMech.getRoot("armJoint", ElevatorConstants.ElevatorMaxExtension,
+			ElevatorConstants.ElevatorMaxExtension);
+	MechanismLigament2d realExtension;
+
+	Mechanism2d expectedArmMech = new Mechanism2d(ElevatorConstants.ElevatorMaxExtension * 2,
+			ElevatorConstants.ElevatorMaxExtension * 2);
+	MechanismRoot2d expectedRoot = realArmMech.getRoot("armJoint", ElevatorConstants.ElevatorMaxExtension,
+			ElevatorConstants.ElevatorMaxExtension);
+	MechanismLigament2d expectedExtension;
+
+	ArmTrajectoryFollower follower = new ArmTrajectoryFollower(armTab, this::getTargetPosition, trajectoryHandler,
+			this::getArmPose,
+			this::setExtensionSpeed, this::setRotationSpeed, m_rController,
+			ElevatorConstants.ElevatorRotationFeedforwardRatio, m_eController,
+			ElevatorConstants.ElevatorMinExtension, ElevatorConstants.ElevatorMaxExtension,
+			Rotation2d.fromDegrees(ElevatorConstants.elevatorRotationSoftMin / 10.0),
+			Rotation2d.fromDegrees(ElevatorConstants.elevatorRotationSoftMax / 10.0), this);
 
 	/** Creates a new ElevatorSubsystem. */
-	public ElevatorSubsystem() {
-		elevatorMotor = new TalonFX(IDConstants.ElevatorMotorID, IDConstants.ElevatorMotorCanName);
-		elevatorMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 60, 100));
-		elevatorMotor.setNeutralMode(NeutralMode.Brake);
-		elevatorMotor.setSelectedSensorPosition(0);
-		elevatorMotor.setInverted(true);
-		elevatorMotor.configForwardSoftLimitThreshold((ElevatorConstants.elevatorSoftMax * 10));
-		elevatorMotor.configReverseSoftLimitThreshold(ElevatorConstants.elevatorSoftMin * 10);
-		elevatorMotor.configForwardSoftLimitEnable(true);
-		elevatorMotor.configReverseSoftLimitEnable(true);
-		elevatorMotor.configSelectedFeedbackCoefficient(ElevatorConstants.ElevatorConversionRatio);
-		elevatorMotor.config_kP(0, ElevatorConstants.ElevatorKp);
-		elevatorMotor.config_kI(0, ElevatorConstants.ElevatorKi);
-		elevatorMotor.config_kD(0, ElevatorConstants.ElevatorKd);
+	public ArmSubsystem() {
 
-		elevatorMotor.configMotionCruiseVelocity(70);
-		elevatorMotor.configMotionAcceleration(140);
-		elevatorMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 80, 120, .5));
+		extensionMotor = new TalonFX(IDConstants.ElevatorMotorID, IDConstants.ElevatorMotorCanName);
+		extensionMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 60, 100));
+		extensionMotor.setNeutralMode(NeutralMode.Brake);
+		extensionMotor.setSelectedSensorPosition(0);
+		extensionMotor.setInverted(true);
+		extensionMotor.configForwardSoftLimitThreshold((ElevatorConstants.elevatorSoftMax * 10));
+		extensionMotor.configReverseSoftLimitThreshold(ElevatorConstants.elevatorSoftMin * 10);
+		extensionMotor.configForwardSoftLimitEnable(true);
+		extensionMotor.configReverseSoftLimitEnable(true);
+		extensionMotor.configSelectedFeedbackCoefficient(ElevatorConstants.ElevatorConversionRatio);
+		extensionMotor.config_kP(0, ElevatorConstants.ElevatorKp);
+		extensionMotor.config_kI(0, ElevatorConstants.ElevatorKi);
+		extensionMotor.config_kD(0, ElevatorConstants.ElevatorKd);
+
+		extensionMotor.configMotionCruiseVelocity(70);
+		extensionMotor.configMotionAcceleration(140);
+		extensionMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 80, 120, .5));
 
 		// elevatorMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
 		// LimitSwitchNormal.NormallyOpen);
 		// elevatorMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
 		// LimitSwitchNormal.NormallyOpen);
 
-		elevatorRotationEncoder = new CANCoder(IDConstants.ElevatorRotationEncoderID);
-		elevatorRotationEncoder.configMagnetOffset(ElevatorConstants.ElevatorRotationMagnetOffset);
-		elevatorRotationEncoder.configSensorDirection(false);
-		elevatorRotationEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-		elevatorRotationEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+		rotationEncoder = new CANCoder(IDConstants.ElevatorRotationEncoderID);
+		rotationEncoder.configMagnetOffset(ElevatorConstants.ElevatorRotationMagnetOffset);
+		rotationEncoder.configSensorDirection(false);
+		rotationEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+		rotationEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 
-		elevatorRotationMotor = new TalonFX(IDConstants.ElevatorRotationMotorID,
+		rotationMotor = new TalonFX(IDConstants.ElevatorRotationMotorID,
 				IDConstants.ElevatorRotationMotorCanName);
-		elevatorRotationMotor.configRemoteFeedbackFilter(elevatorRotationEncoder, 0);
-		elevatorRotationMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
-		elevatorRotationMotor.setNeutralMode(NeutralMode.Brake);
-		elevatorRotationMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 60, 100));
-		elevatorRotationMotor.configForwardSoftLimitThreshold(ElevatorConstants.elevatorRotationSoftMin);
-		elevatorRotationMotor.configReverseSoftLimitThreshold(ElevatorConstants.elevatorRotationSoftMax);
-		elevatorRotationMotor.configForwardSoftLimitEnable(true);
-		elevatorRotationMotor.configReverseSoftLimitEnable(true);
-		elevatorRotationMotor.setInverted(true);
-		elevatorRotationMotor.setSensorPhase(true);
-		elevatorRotationMotor.configSelectedFeedbackCoefficient(0.87890625); // Constant that defines .1degree
-																				// resolution by
-																				// multiplying encoder ticks to get
-																				// angle from
-																				// the cancoder then multiplies by 10
-		elevatorRotationMotor.configMotionCruiseVelocity(10);
-		elevatorRotationMotor.configMotionAcceleration(100);
-		elevatorRotationMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 80, 120, .5));
+		rotationMotor.configRemoteFeedbackFilter(rotationEncoder, 0);
+		rotationMotor.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0);
+		rotationMotor.setNeutralMode(NeutralMode.Brake);
+		rotationMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 60, 100));
+		rotationMotor.configForwardSoftLimitThreshold(ElevatorConstants.elevatorRotationSoftMin);
+		rotationMotor.configReverseSoftLimitThreshold(ElevatorConstants.elevatorRotationSoftMax);
+		rotationMotor.configForwardSoftLimitEnable(true);
+		rotationMotor.configReverseSoftLimitEnable(true);
+		rotationMotor.setInverted(true);
+		rotationMotor.setSensorPhase(true);
+		rotationMotor.configSelectedFeedbackCoefficient(0.87890625); // Constant that defines .1degree
+																		// resolution by
+																		// multiplying encoder ticks to get
+																		// angle from
+																		// the cancoder then multiplies by 10
+		rotationMotor.configMotionCruiseVelocity(10);
+		rotationMotor.configMotionAcceleration(100);
+		rotationMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 80, 120, .5));
 
-		elevatorRotationEncoder.setPosition(elevatorRotationEncoder.getAbsolutePosition());
+		rotationEncoder.setPosition(rotationEncoder.getAbsolutePosition());
 
 		wristEncoder = new CANCoder(IDConstants.WristEncoderID);
 		wristEncoder.configMagnetOffset(ElevatorConstants.WristRotationMagnetOffset);
@@ -134,14 +158,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 		wrist.configMotionCruiseVelocity(500);
 		wristEncoder.setPosition(wristEncoder.getAbsolutePosition());
 
-		elevatorTab.addNumber("Arm X", this::getGripperX);
-		elevatorTab.addNumber("Arm Y", this::getGripperY);
-		elevatorTab.addNumber("Elevator Angle", () -> {
+		armTab.addNumber("Arm X", () -> {
+			return this.getArmPose().getX();
+		});
+		armTab.addNumber("Arm Y", () -> {
+			return this.getArmPose().getY();
+		});
+		armTab.addNumber("Arm Angle", () -> {
 			return getElevatorRotationAngle().getDegrees();
 		});
 
-		elevatorTab.add("Extension Motor Speed Output", elevatorMotor.getMotorOutputPercent());
-		elevatorTab.add("Arm Rotation Motor Speed Output", elevatorRotationMotor.getMotorOutputPercent());
+		armTab.add("Extension Motor Speed Output", extensionMotor.getMotorOutputPercent());
+		armTab.add("Arm Rotation Motor Speed Output", rotationMotor.getMotorOutputPercent());
 
 		m_eController = new PIDController(ElevatorConstants.ElevatorKp, ElevatorConstants.ElevatorKi,
 				ElevatorConstants.ElevatorKd);
@@ -149,20 +177,20 @@ public class ElevatorSubsystem extends SubsystemBase {
 				ElevatorConstants.ElevatorRotationKd);
 
 		trajectoryHandler = new ArmTrajectoryGenerator(ElevatorConstants.maxArmVelocity,
-				ElevatorConstants.maxArmAcceleration, ElevatorConstants.maxArmRotationVelocity, ElevatorConstants.maxArmRotationAcceleration, ElevatorConstants.ElevatorMinExtension);
+				ElevatorConstants.maxArmAcceleration, ElevatorConstants.maxArmRotationVelocity,
+				ElevatorConstants.maxArmRotationAcceleration, ElevatorConstants.ElevatorMinExtension);
 
 		wrist.set(ControlMode.Position, wrist.getSelectedSensorPosition());
 
 		canifier = new CANifier(IDConstants.CanifierID);
 
-		setDefaultCommand(
-				new ArmTrajectoryFollower(elevatorTab, this::getTargetPosition, trajectoryHandler, this::getArmPose,
-						this::getGripperPositon,
-						this::setExtensionSpeed, this::setRotationSpeed, m_rController,
-						ElevatorConstants.ElevatorRotationFeedforwardRatio, m_eController,
-						ElevatorConstants.ElevatorMinExtension, ElevatorConstants.ElevatorMaxExtension,
-						Rotation2d.fromDegrees(ElevatorConstants.elevatorRotationSoftMin / 10.0),
-						Rotation2d.fromDegrees(ElevatorConstants.elevatorRotationSoftMax / 10.0), this));
+		setDefaultCommand(follower);
+
+		realExtension = realRoot.append(
+				new MechanismLigament2d("Extension", ElevatorConstants.ElevatorMinExtension, 0));
+		expectedExtension = expectedRoot.append(
+				new MechanismLigament2d("Extension", ElevatorConstants.ElevatorMinExtension, 0));
+
 	}
 
 	public boolean getIntakeSensor() {
@@ -200,33 +228,21 @@ public class ElevatorSubsystem extends SubsystemBase {
 	}
 
 	public double getElevatorLength() {
-		return (elevatorMotor.getSelectedSensorPosition() / 10.0) + ElevatorConstants.ElevatorMinExtension;
+		return (extensionMotor.getSelectedSensorPosition() / 10.0) + ElevatorConstants.ElevatorMinExtension;
 	}
 
 	public Rotation2d getElevatorRotationAngle() {
-		return Rotation2d.fromDegrees(elevatorRotationEncoder.getPosition());
-	}
-
-	public Translation2d getGripperPositon() {
-		return new Translation2d( getElevatorLength(),getElevatorRotationAngle());
-	}
-
-	public double getGripperX() {
-		return getGripperPositon().getX();
-	}
-
-	public double getGripperY() {
-		return getGripperPositon().getY();
+		return Rotation2d.fromDegrees(rotationEncoder.getPosition());
 	}
 
 	public Translation2d getArmPose() {
 
-		return new Translation2d(getElevatorLength(),getElevatorRotationAngle());
+		return new Translation2d(getElevatorLength(), getElevatorRotationAngle());
 	}
 
 	public void setExtensionSpeed(double speed) {
-		//elevatorMotor.set(ControlMode.PercentOutput, 0);
-		elevatorMotor.set(ControlMode.PercentOutput, speed);
+		// elevatorMotor.set(ControlMode.PercentOutput, 0);
+		extensionMotor.set(ControlMode.PercentOutput, speed);
 	}
 
 	public void setRotationSpeed(double speed) {
@@ -236,17 +252,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 		if (speed < -.55) {
 			speed = -.55;
 		}
-		//elevatorRotationMotor.set(ControlMode.PercentOutput, 0);
-		elevatorRotationMotor.set(ControlMode.PercentOutput, speed);
+		// elevatorRotationMotor.set(ControlMode.PercentOutput, 0);
+		rotationMotor.set(ControlMode.PercentOutput, speed);
 	}
 
 	public void setBreakMode(boolean enabled) {
 		if (enabled) {
-			elevatorRotationMotor.setNeutralMode(NeutralMode.Brake);
-			elevatorMotor.setNeutralMode(NeutralMode.Brake);
+			rotationMotor.setNeutralMode(NeutralMode.Brake);
+			extensionMotor.setNeutralMode(NeutralMode.Brake);
 		} else {
-			elevatorRotationMotor.setNeutralMode(NeutralMode.Coast);
-			elevatorMotor.setNeutralMode(NeutralMode.Coast);
+			rotationMotor.setNeutralMode(NeutralMode.Coast);
+			extensionMotor.setNeutralMode(NeutralMode.Coast);
 		}
 	}
 
@@ -265,11 +281,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 				} else if (armPosition == Arm.HumanPlayer) {
 					pos = new Translation2d(ElevatorConstants.frontConeHumanPlayerX,
 							ElevatorConstants.frontConeHumanPlayerY);
-				}
-				else if( armPosition == Arm.cubeLowIntake){
+				} else if (armPosition == Arm.cubeLowIntake) {
 					pos = new Translation2d(ElevatorConstants.frontConeIntakeX, ElevatorConstants.frontConeIntakeY);
-				}
-				else if( armPosition == Arm.groundIntake){
+				} else if (armPosition == Arm.groundIntake) {
 					pos = new Translation2d(ElevatorConstants.frontConeIntakeX, ElevatorConstants.frontConeIntakeY);
 				}
 			} else if (wristOrrientation == Wrist.cube) {
@@ -288,7 +302,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 					pos = new Translation2d(ElevatorConstants.frontConeGroundX,
 							ElevatorConstants.frontConeGroundY);
 				} else if (armPosition == Arm.cubeLowIntake) {
-					pos = new Translation2d(ElevatorConstants.frontCubeLowIntakeX, ElevatorConstants.frontCubeLowIntakeY);
+					pos = new Translation2d(ElevatorConstants.frontCubeLowIntakeX,
+							ElevatorConstants.frontCubeLowIntakeY);
 				}
 			}
 		} else if (side == Sides.back) {
@@ -304,12 +319,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 				} else if (armPosition == Arm.HumanPlayer) {
 					pos = new Translation2d(ElevatorConstants.backConeHumanPlayerX,
 							ElevatorConstants.backConeHumanPlayerY);
-				}
-				else if(armPosition == Arm.groundIntake){
+				} else if (armPosition == Arm.groundIntake) {
 					pos = new Translation2d(ElevatorConstants.backConeIntakeX, ElevatorConstants.backConeIntakeY);
 
-				}
-				else if(armPosition == Arm.cubeLowIntake){
+				} else if (armPosition == Arm.cubeLowIntake) {
 					pos = new Translation2d(ElevatorConstants.backConeIntakeX, ElevatorConstants.backConeIntakeY);
 
 				}
@@ -325,11 +338,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 				} else if (armPosition == Arm.HumanPlayer) {
 					pos = new Translation2d(ElevatorConstants.backCubeHumanPlayerX,
 							ElevatorConstants.backCubeHumanPlayerY);
-				}
-				else if(armPosition == Arm.cubeLowIntake){
+				} else if (armPosition == Arm.cubeLowIntake) {
 					pos = new Translation2d(ElevatorConstants.backCubeIntakeX, ElevatorConstants.backCubeIntakeY);
-				}
-				else if (armPosition == Arm.groundIntake){
+				} else if (armPosition == Arm.groundIntake) {
 					pos = new Translation2d(ElevatorConstants.backCubeIntakeX, ElevatorConstants.backCubeIntakeY);
 				}
 			}
@@ -340,9 +351,24 @@ public class ElevatorSubsystem extends SubsystemBase {
 		return pos;
 	}
 
+	public void log() {
+
+		Logger.getInstance().recordOutput("/Arm/realArmMech", realArmMech);
+		Logger.getInstance().recordOutput("/Arm/expectedArmMech", realArmMech);
+
+	}
+
 	@Override
 	public void periodic() {
+		realExtension.setAngle(getElevatorRotationAngle());
+		realExtension.setLength(getElevatorLength());
+		expectedExtension.setAngle(follower.targetTranslation.getAngle());
+		expectedExtension.setLength(follower.targetTranslation.getNorm());
+
 		SmartDashboard.putBoolean("Cube Mode", (wristOrrientation == Wrist.cube) ? true : false);
+		SmartDashboard.putData("RealArm", realArmMech);
+		SmartDashboard.putData("ExpectedArm", expectedArmMech);
+
 		if (getElevatorRotationAngle().getDegrees() > ElevatorConstants.IntakeLimitMax) {
 			if (wristOrrientation == Wrist.cube && side == Sides.front) {
 				wrist.set(ControlMode.MotionMagic, 0);
@@ -356,8 +382,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 			if (wristOrrientation == Wrist.cone && side == Sides.front) {
 				wrist.set(ControlMode.MotionMagic, 180);
 			}
-			
+
 		}
-		//wrist.set(ControlMode.PercentOutput, 0);
+
+		log();
+
+		// wrist.set(ControlMode.PercentOutput, 0);
 	}
 }

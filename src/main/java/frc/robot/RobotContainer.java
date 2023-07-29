@@ -5,13 +5,12 @@
 package frc.robot;
 
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.ElevatorSubsystem.Arm;
+import frc.robot.subsystems.ArmSubsystem.Arm;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 import frc.robot.commands.drivetrain.*;
 import frc.robot.commands.arm.*;
@@ -27,7 +26,7 @@ public class RobotContainer {
 
 	public static DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-	public ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+	public ArmSubsystem elevatorSubsystem = new ArmSubsystem();
 	public LEDSubsystem ledSubsystem = new LEDSubsystem(true, elevatorSubsystem);
 
 	public static CommandXboxController driverController = new CommandXboxController(1);

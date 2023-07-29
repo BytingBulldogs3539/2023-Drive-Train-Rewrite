@@ -61,22 +61,23 @@ public class DriveSubsystem extends SubsystemBase {
 
 	private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-	//Vision Variables
+	// Vision Variables
 	AprilTagFieldLayout aprilTagFieldLayout;
 
 	public PhotonCamera leftCam;
 	Transform3d robotToLeftCam = new Transform3d(
-		new Translation3d(-0.1746 - .07 + 0.08, 0.2885 + 0.05, 0.3876),
-		new Rotation3d(Math.toRadians(0), 0, Math.toRadians(4))
-	);
-	
+			new Translation3d(-0.1746 - .07 + 0.08, 0.2885 + 0.05, 0.3876),
+			new Rotation3d(Math.toRadians(0), 0, Math.toRadians(4)));
+
 	public PhotonCamera rightCam;
 	Transform3d robotToRightCam = new Transform3d(
-		new Translation3d(-0.1746 - .07 + 0.09, -0.2885 - 0.01, 0.3876),
-		new Rotation3d(Math.toRadians(0), 0, Math.toRadians(-4))
-	);
+			new Translation3d(-0.1746 - .07 + 0.09, -0.2885 - 0.01, 0.3876),
+			new Rotation3d(Math.toRadians(0), 0, Math.toRadians(-4)));
+			
 	PhotonPoseEstimator leftPhotonPoseEstimator;
 	PhotonPoseEstimator rightPhotonPoseEstimator;
+	Optional<EstimatedRobotPose> resultLeft;
+	Optional<EstimatedRobotPose> resultRight;
 	boolean useVision = false;
 
 	public DriveSubsystem() {
@@ -90,18 +91,16 @@ public class DriveSubsystem extends SubsystemBase {
 
 		leftCam = new PhotonCamera("LeftCam");
 		leftPhotonPoseEstimator = new PhotonPoseEstimator(
-			aprilTagFieldLayout,
-			PoseStrategy.MULTI_TAG_PNP,
-			leftCam,
-			robotToLeftCam
-		);
+				aprilTagFieldLayout,
+				PoseStrategy.MULTI_TAG_PNP,
+				leftCam,
+				robotToLeftCam);
 		rightCam = new PhotonCamera("RightCam");
 		rightPhotonPoseEstimator = new PhotonPoseEstimator(
-			aprilTagFieldLayout,
-			PoseStrategy.MULTI_TAG_PNP,
-			rightCam,
-			robotToRightCam
-		);
+				aprilTagFieldLayout,
+				PoseStrategy.MULTI_TAG_PNP,
+				rightCam,
+				robotToRightCam);
 		// LoggedPowerDistribution.getInstance(moduleId, moduleType)
 		tab = Shuffleboard.getTab("Drivetrain");
 
@@ -202,42 +201,45 @@ public class DriveSubsystem extends SubsystemBase {
 	public void resetRobotPose(Trajectory trajectory) {
 		swerveController.resetPosition(trajectory.calculate(0.0).getPathState().getPose2d());
 	}
+
 	public void resetRobotPose(Pose2d pose) {
 		swerveController.resetPosition(pose);
 	}
+
 	public void resetRobotRotation(Rotation2d rot) {
 		swerveController.resetPosition(new Pose2d(swerveController.getPoseMeters().getTranslation(), rot));
 	}
-	
-	public Pose2d getPose2d()
-	{
+
+	public Pose2d getPose2d() {
 		return swerveController.getPoseMeters();
 	}
 
 	public Rotation2d getGyroscopeRotation() {
 		return Rotation2d.fromDegrees(swerveController.getPigeon2().getYaw().getValue());
 	}
+
 	public double getPitch() {
 		return swerveController.getPigeon2().getRoll().getValue();
 	}
 
-	//Vision Methods
+	// Vision Methods
 	public Optional<EstimatedRobotPose> getEstimatedLeftGlobalPose(Pose2d prevEstimatedRobotPose) {
 		leftPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 		return leftPhotonPoseEstimator.update();
 	}
+
 	public Optional<EstimatedRobotPose> getEstimatedRightGlobalPose(Pose2d prevEstimatedRobotPose) {
 		rightPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 		return rightPhotonPoseEstimator.update();
 	}
-	
+
 	public void useVision(boolean useVision) {
 		this.useVision = useVision;
 	}
+
 	public void setVisionWeights(double visionX, double visionY, int visionDeg) {
 		swerveController.m_odometry.setVisionMeasurementStdDevs(
-			VecBuilder.fill(visionX, visionY, Units.degreesToRadians(visionDeg))
-		);
+				VecBuilder.fill(visionX, visionY, Units.degreesToRadians(visionDeg)));
 	}
 
 	public void setLeftCamera(boolean on) {
@@ -245,7 +247,7 @@ public class DriveSubsystem extends SubsystemBase {
 			aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
 		else
 			aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-		
+
 		leftCam.setDriverMode(false);
 		leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
 	}
@@ -260,8 +262,7 @@ public class DriveSubsystem extends SubsystemBase {
 		rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
 	}
 
-	public void setStartPosition(StartPosition position)
-	{
+	public void setStartPosition(StartPosition position) {
 		// Configure which camera to use in auton based on start position
 		switch (position) {
 			case RED_SMOOTH:
@@ -293,11 +294,25 @@ public class DriveSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 
-		//Vision Calculations
+		// Vision Calculations
 
+		resultLeft = getEstimatedLeftGlobalPose(
+				swerveController.m_odometry.getEstimatedPosition());
+		resultRight = getEstimatedRightGlobalPose(
+				swerveController.m_odometry.getEstimatedPosition());
 
-
-
+		if (useVision) {
+			if (resultLeft.isPresent()) {
+				EstimatedRobotPose camPoseLeft = resultLeft.get();
+				swerveController.m_odometry.addVisionMeasurement(
+						camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
+			}
+			if (resultRight.isPresent()) {
+				EstimatedRobotPose camPoseRight = resultRight.get();
+				swerveController.m_odometry.addVisionMeasurement(
+						camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
+			}
+		}
 
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
 				Robot.defaultPeriodSecs);
@@ -311,12 +326,22 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
-		if(follower.getLastState()!=null)
-			Logger.getInstance().recordOutput("/DriveTrain/Trajectory",follower.getLastState().getPathState().getPose2d());
+		if (resultLeft.isPresent()) {
+			EstimatedRobotPose camPoseLeft = resultLeft.get();
+			Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose);
+		}
+		if (resultRight.isPresent()) {
+			EstimatedRobotPose camPoseRight = resultRight.get();
+			Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose);
+		}
+
+		if (follower.getLastState() != null)
+			Logger.getInstance().recordOutput("/DriveTrain/Trajectory",
+					follower.getLastState().getPathState().getPose2d());
 		Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
 		Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
 				new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,
 						m_chassisSpeeds.omegaRadiansPerSecond });
-		
+
 	}
 }

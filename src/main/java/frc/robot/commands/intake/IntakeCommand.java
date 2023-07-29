@@ -7,12 +7,11 @@ package frc.robot.commands.intake;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem.Arm;
-import frc.robot.subsystems.ElevatorSubsystem.Wrist;
+import frc.robot.subsystems.ArmSubsystem.Arm;
+import frc.robot.subsystems.ArmSubsystem.Wrist;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 public class IntakeCommand extends CommandBase {
@@ -24,10 +23,10 @@ public class IntakeCommand extends CommandBase {
     Arm initialArm;
     Wrist initialWrist;
     IntakeSubsystem intakeSub;
-    ElevatorSubsystem elevatorSub;
+    ArmSubsystem elevatorSub;
     LEDSubsystem ledSub;
 
-    public IntakeCommand(IntakeSubsystem intakeSub, ElevatorSubsystem elevatorSub, LEDSubsystem ledSub, double speed) {
+    public IntakeCommand(IntakeSubsystem intakeSub, ArmSubsystem elevatorSub, LEDSubsystem ledSub, double speed) {
         this.intakeSub = intakeSub;
         this.ledSub = ledSub;
         this.elevatorSub = elevatorSub;
@@ -35,7 +34,7 @@ public class IntakeCommand extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
     }
     
-    public IntakeCommand(IntakeSubsystem intakeSub,ElevatorSubsystem elevatorSub, LEDSubsystem ledSub, double speed, boolean useSensor) {
+    public IntakeCommand(IntakeSubsystem intakeSub,ArmSubsystem elevatorSub, LEDSubsystem ledSub, double speed, boolean useSensor) {
         this.intakeSub = intakeSub;
         this.ledSub = ledSub;
         this.elevatorSub = elevatorSub;

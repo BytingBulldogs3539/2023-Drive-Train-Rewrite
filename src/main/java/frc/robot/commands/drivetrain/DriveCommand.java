@@ -51,6 +51,7 @@ public class DriveCommand extends CommandBase {
 	public void end(boolean interrupted) {
 	}
 
+
 	private static double deadband(double value, double deadband) {
 		if (Math.abs(value) > deadband) {
 			if (value > 0.0) {
@@ -68,7 +69,7 @@ public class DriveCommand extends CommandBase {
 		joystick = new Translation2d(deadband(joystick.getX(), 0.05), deadband(joystick.getY(), 0.05));
 
 		Rotation2d rotation = joystick.getAngle();
-		double distance = joystick.getDistance(new Translation2d());
+		double distance = joystick.getNorm();
 
 		double distanceModified = Math.copySign(Math.pow(distance, 3), distance);
 

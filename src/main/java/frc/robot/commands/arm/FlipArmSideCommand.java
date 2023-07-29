@@ -5,13 +5,13 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 
 public class FlipArmSideCommand extends CommandBase {
   /** Creates a new FlipArmSideCommand. */
-  ElevatorSubsystem elevSub;
+  ArmSubsystem elevSub;
 
-  public FlipArmSideCommand(ElevatorSubsystem elevSub) {
+  public FlipArmSideCommand(ArmSubsystem elevSub) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevSub = elevSub;
   }
@@ -19,10 +19,10 @@ public class FlipArmSideCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if (elevSub.getSide() == ElevatorSubsystem.Sides.front)
-      elevSub.setSide(ElevatorSubsystem.Sides.back);
-    else if (elevSub.getSide() == ElevatorSubsystem.Sides.back)
-      elevSub.setSide(ElevatorSubsystem.Sides.front);
+    if (elevSub.getSide() == ArmSubsystem.Sides.front)
+      elevSub.setSide(ArmSubsystem.Sides.back);
+    else if (elevSub.getSide() == ArmSubsystem.Sides.back)
+      elevSub.setSide(ArmSubsystem.Sides.front);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

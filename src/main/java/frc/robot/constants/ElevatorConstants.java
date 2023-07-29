@@ -11,6 +11,7 @@ public class ElevatorConstants extends BBConstants {
 
 	public ElevatorConstants() {
 		super("/home/lvuser/ElevatorConstants.ini", false);
+		save();
 	}
 
 	public static int ledCount = 100;
