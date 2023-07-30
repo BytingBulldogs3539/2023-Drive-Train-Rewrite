@@ -10,6 +10,7 @@ import org.frcteam3539.CTRE_Swerve_Lib.control.HolonomicMotionProfiledTrajectory
 import org.frcteam3539.CTRE_Swerve_Lib.control.PidConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.CTRSwerveDrivetrain;
+import org.frcteam3539.CTRE_Swerve_Lib.swerve.CTRSwerveModule;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveConstantsCreator;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveTrainConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveModuleConstants;
@@ -41,6 +42,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.DriveCommand;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.IDConstants;
@@ -220,6 +222,28 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public double getPitch() {
 		return swerveController.getPigeon2().getRoll().getValue();
+	}
+
+	public void zeroModulesOffsets()
+	{
+		for (CTRSwerveModule module: swerveController.getModules()) {
+			module.setCANcoderOffset(0.0);
+		}
+	}
+	/**
+	 * Must call zero modules offset first.
+	 */
+	public void saveModuleOffsets()
+	{
+		DriveConstants.FLSteerOffset = -swerveController.getModules()[0].getPosition().angle.getRotations();
+		DriveConstants.FRSteerOffset = -swerveController.getModules()[1].getPosition().angle.getRotations();
+		DriveConstants.BLSteerOffset = -swerveController.getModules()[2].getPosition().angle.getRotations();
+		DriveConstants.BRSteerOffset = -swerveController.getModules()[3].getPosition().angle.getRotations();
+		RobotContainer.driveConstants.save();
+		swerveController.getModules()[0].setCANcoderOffset(DriveConstants.FLSteerOffset);
+		swerveController.getModules()[1].setCANcoderOffset(DriveConstants.FRSteerOffset);
+		swerveController.getModules()[2].setCANcoderOffset(DriveConstants.BLSteerOffset);
+		swerveController.getModules()[3].setCANcoderOffset(DriveConstants.FRSteerOffset);
 	}
 
 	// Vision Methods

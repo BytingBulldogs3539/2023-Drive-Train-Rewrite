@@ -48,7 +48,8 @@ public class ArmTrajectoryFollower extends CommandBase {
 			Consumer<Double> setRotationSpeed, PIDController rController, double rKf,
 			PIDController eController, double minArmLength, double maxArmLength, Rotation2d minArmRotation,
 			Rotation2d maxArmRotation, Subsystem... requirements) {
-		this.endPointSupplier = (Supplier<Translation2d>) ErrorMessages.requireNonNullParam(endPointSupplier, "endPoint",
+		this.endPointSupplier = (Supplier<Translation2d>) ErrorMessages.requireNonNullParam(endPointSupplier,
+				"endPoint",
 				"SwerveControllerCommand");
 		this.generator = (ArmTrajectoryGenerator) ErrorMessages.requireNonNullParam(generator, "generator",
 				"SwerveControllerCommand");
@@ -85,7 +86,6 @@ public class ArmTrajectoryFollower extends CommandBase {
 		m_trajectory = generator.generateTrajectories(m_pose.get(), endPointSupplier.get());
 		lastState = m_trajectory.calculate(0).getPathState();
 
-
 	}
 
 	public void execute() {
@@ -119,25 +119,25 @@ public class ArmTrajectoryFollower extends CommandBase {
 		double realRotation = m_pose.get().getAngle().getDegrees();
 
 		if (realRotation < -95) {
-			realRotation = realRotation+360;
+			realRotation = realRotation + 360;
 		}
 
 		if (expectedRotation < -95) {
-			expectedRotation = p.getAngle().getDegrees()+360;
+			expectedRotation = p.getAngle().getDegrees() + 360;
 		}
 
 		if (expectedExtension < minArmLength) {
 			expectedExtension = minArmLength;
 		}
-		//if (p.getNorm() > maxArmLength) {
-		//	p = new Translation2d(maxArmLength, p.getAngle());
-		//}
+		// if (p.getNorm() > maxArmLength) {
+		// p = new Translation2d(maxArmLength, p.getAngle());
+		// }
 
 		// if (p.getAngle().getDegrees() > maxArmRotation.getDegrees()) {
-		// 	p = new Translation2d(p.getNorm(), maxArmRotation);
+		// p = new Translation2d(p.getNorm(), maxArmRotation);
 		// }
 		// if (p.getAngle().getDegrees() < minArmRotation.getDegrees()) {
-		// 	p = new Translation2d(p.getNorm(), minArmRotation);
+		// p = new Translation2d(p.getNorm(), minArmRotation);
 		// }
 
 		// TODO: add limiting box.
@@ -154,7 +154,6 @@ public class ArmTrajectoryFollower extends CommandBase {
 		SmartDashboard.putNumber("Real Arm x", m_pose.get().getX());
 		SmartDashboard.putNumber("Real Arm y", m_pose.get().getY());
 
-
 		double targetE = this.m_eController.calculate(realExtension, expectedExtension);
 		double targetR = this.m_rController
 				.calculate(realRotation, expectedRotation)
@@ -168,8 +167,6 @@ public class ArmTrajectoryFollower extends CommandBase {
 		Logger.getInstance().recordOutput("/Arm/expectedRotationAngle", expectedRotation);
 		Logger.getInstance().recordOutput("/Arm/extensionOutput", targetE);
 		Logger.getInstance().recordOutput("/Arm/RotationOutput", targetR);
-
-
 
 		lastEndpoint = endPointSupplier.get();
 		lastState = s;

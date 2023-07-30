@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.constants.*;
 import frc.robot.utilities.ArmTrajectoryGenerator;
 import frc.robot.utilities.ArmTrajectoryFollower;
@@ -187,6 +188,29 @@ public class ArmSubsystem extends SubsystemBase {
 				new MechanismLigament2d("ExpectedExtension", ElevatorConstants.ElevatorMinExtension, 0));
 
 	}
+	public void zeroArmOffset()
+	{
+		rotationEncoder.configMagnetOffset(0);
+
+	}
+	public void saveArmRotationOffset()
+	{
+		ElevatorConstants.ElevatorRotationMagnetOffset = -rotationEncoder.getAbsolutePosition();
+		RobotContainer.elevatorConstants.save();
+		rotationEncoder.configMagnetOffset(ElevatorConstants.ElevatorRotationMagnetOffset);
+	}
+
+	public void zeroWristOffset()
+	{
+		wristEncoder.configMagnetOffset(0);
+
+	}
+	public void saveWristRotationOffset()
+	{
+		ElevatorConstants.WristRotationMagnetOffset = -wristEncoder.getAbsolutePosition();
+		RobotContainer.elevatorConstants.save();
+		wristEncoder.configMagnetOffset(ElevatorConstants.WristRotationMagnetOffset);
+	}
 
 	public boolean getIntakeSensor() {
 		return canifier.getGeneralInput(GeneralPin.LIMF);
@@ -250,6 +274,14 @@ public class ArmSubsystem extends SubsystemBase {
 
 		//rotationMotor.set(ControlMode.PercentOutput, 0);
 		rotationMotor.set(ControlMode.PercentOutput, speed);
+	}
+
+	public void setWristBreakMode(boolean enabled) {
+		if (enabled) {
+			wrist.setNeutralMode(NeutralMode.Brake);
+		} else {
+			wrist.setNeutralMode(NeutralMode.Coast);
+		}
 	}
 
 	public void setBreakMode(boolean enabled) {
