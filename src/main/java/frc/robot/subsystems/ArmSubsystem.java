@@ -55,14 +55,17 @@ public class ArmSubsystem extends SubsystemBase {
 	CANCoder wristEncoder;
 	TalonFX rotationMotor;
 	CANCoder rotationEncoder;
-	PIDController m_rController;
-	PIDController m_eController;
+	PIDController m_eController = new PIDController(ElevatorConstants.ElevatorKp, ElevatorConstants.ElevatorKi, ElevatorConstants.ElevatorKd);
+	PIDController m_rController = new PIDController(ElevatorConstants.ElevatorRotationKp, ElevatorConstants.ElevatorRotationKi,
+	ElevatorConstants.ElevatorRotationKd);
 
 	Arm armPosition = Arm.intake;
 	Sides side = Sides.front;
 	private Wrist wristOrrientation = Wrist.cube;
 
-	ArmTrajectoryGenerator trajectoryHandler;
+	ArmTrajectoryGenerator trajectoryHandler = new ArmTrajectoryGenerator(ElevatorConstants.maxArmVelocity,
+			ElevatorConstants.maxArmAcceleration, ElevatorConstants.maxArmRotationVelocity,
+			ElevatorConstants.maxArmRotationAcceleration, ElevatorConstants.ElevatorMinExtension);
 
 	ShuffleboardTab armTab = Shuffleboard.getTab("Elevator");
 
@@ -75,7 +78,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	Mechanism2d expectedArmMech = new Mechanism2d(ElevatorConstants.ElevatorMaxExtension * 2,
 			ElevatorConstants.ElevatorMaxExtension * 2);
-	MechanismRoot2d expectedRoot = realArmMech.getRoot("armJoint", ElevatorConstants.ElevatorMaxExtension,
+	MechanismRoot2d expectedRoot = expectedArmMech.getRoot("armJoint", ElevatorConstants.ElevatorMaxExtension,
 			ElevatorConstants.ElevatorMaxExtension);
 	MechanismLigament2d expectedExtension;
 
@@ -171,14 +174,6 @@ public class ArmSubsystem extends SubsystemBase {
 		armTab.add("Extension Motor Speed Output", extensionMotor.getMotorOutputPercent());
 		armTab.add("Arm Rotation Motor Speed Output", rotationMotor.getMotorOutputPercent());
 
-		m_eController = new PIDController(ElevatorConstants.ElevatorKp, ElevatorConstants.ElevatorKi,
-				ElevatorConstants.ElevatorKd);
-		m_rController = new PIDController(ElevatorConstants.ElevatorRotationKp, ElevatorConstants.ElevatorRotationKi,
-				ElevatorConstants.ElevatorRotationKd);
-
-		trajectoryHandler = new ArmTrajectoryGenerator(ElevatorConstants.maxArmVelocity,
-				ElevatorConstants.maxArmAcceleration, ElevatorConstants.maxArmRotationVelocity,
-				ElevatorConstants.maxArmRotationAcceleration, ElevatorConstants.ElevatorMinExtension);
 
 		wrist.set(ControlMode.Position, wrist.getSelectedSensorPosition());
 
@@ -187,9 +182,9 @@ public class ArmSubsystem extends SubsystemBase {
 		setDefaultCommand(follower);
 
 		realExtension = realRoot.append(
-				new MechanismLigament2d("Extension", ElevatorConstants.ElevatorMinExtension, 0));
+				new MechanismLigament2d("RealExtension", ElevatorConstants.ElevatorMinExtension, 0));
 		expectedExtension = expectedRoot.append(
-				new MechanismLigament2d("Extension", ElevatorConstants.ElevatorMinExtension, 0));
+				new MechanismLigament2d("ExpectedExtension", ElevatorConstants.ElevatorMinExtension, 0));
 
 	}
 
@@ -241,7 +236,7 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void setExtensionSpeed(double speed) {
-		// elevatorMotor.set(ControlMode.PercentOutput, 0);
+		//extensionMotor.set(ControlMode.PercentOutput, 0);
 		extensionMotor.set(ControlMode.PercentOutput, speed);
 	}
 
@@ -252,7 +247,8 @@ public class ArmSubsystem extends SubsystemBase {
 		if (speed < -.55) {
 			speed = -.55;
 		}
-		// elevatorRotationMotor.set(ControlMode.PercentOutput, 0);
+
+		//rotationMotor.set(ControlMode.PercentOutput, 0);
 		rotationMotor.set(ControlMode.PercentOutput, speed);
 	}
 
@@ -354,7 +350,7 @@ public class ArmSubsystem extends SubsystemBase {
 	public void log() {
 
 		Logger.getInstance().recordOutput("/Arm/realArmMech", realArmMech);
-		Logger.getInstance().recordOutput("/Arm/expectedArmMech", realArmMech);
+		Logger.getInstance().recordOutput("/Arm/expectedArmMech", expectedArmMech);
 
 	}
 
@@ -387,6 +383,6 @@ public class ArmSubsystem extends SubsystemBase {
 
 		log();
 
-		// wrist.set(ControlMode.PercentOutput, 0);
+		 //wrist.set(ControlMode.PercentOutput, 0);
 	}
 }

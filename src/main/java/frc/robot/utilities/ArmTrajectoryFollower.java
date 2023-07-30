@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 
 import org.frcteam3539.CTRE_Swerve_Lib.control.MultiTrajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Path.State;
+import org.littletonrobotics.junction.Logger;
 
 public class ArmTrajectoryFollower extends CommandBase {
 	private final Timer m_timer = new Timer();
@@ -84,6 +85,7 @@ public class ArmTrajectoryFollower extends CommandBase {
 		m_trajectory = generator.generateTrajectories(m_pose.get(), endPointSupplier.get());
 		lastState = m_trajectory.calculate(0).getPathState();
 
+
 	}
 
 	public void execute() {
@@ -110,23 +112,33 @@ public class ArmTrajectoryFollower extends CommandBase {
 
 		Translation2d p = new Translation2d(s.getPose2d().getX(), s.getPose2d().getY());
 
-		if (p.getAngle().getDegrees() < -95) {
-			p = new Translation2d(p.getNorm(), p.getAngle().plus(Rotation2d.fromDegrees(360)));
+		double expectedExtension = p.getNorm();
+		double expectedRotation = p.getAngle().getDegrees();
+
+		double realExtension = m_pose.get().getNorm();
+		double realRotation = m_pose.get().getAngle().getDegrees();
+
+		if (realRotation < -95) {
+			realRotation = realRotation+360;
 		}
 
-		if (p.getNorm() < minArmLength) {
-			p = new Translation2d(minArmLength, p.getAngle());
-		}
-		if (p.getNorm() > maxArmLength) {
-			p = new Translation2d(maxArmLength, p.getAngle());
+		if (expectedRotation < -95) {
+			expectedRotation = p.getAngle().getDegrees()+360;
 		}
 
-		if (p.getAngle().getDegrees() > maxArmRotation.getDegrees()) {
-			p = new Translation2d(p.getNorm(), maxArmRotation);
+		if (expectedExtension < minArmLength) {
+			expectedExtension = minArmLength;
 		}
-		if (p.getAngle().getDegrees() < minArmRotation.getDegrees()) {
-			p = new Translation2d(p.getNorm(), minArmRotation);
-		}
+		//if (p.getNorm() > maxArmLength) {
+		//	p = new Translation2d(maxArmLength, p.getAngle());
+		//}
+
+		// if (p.getAngle().getDegrees() > maxArmRotation.getDegrees()) {
+		// 	p = new Translation2d(p.getNorm(), maxArmRotation);
+		// }
+		// if (p.getAngle().getDegrees() < minArmRotation.getDegrees()) {
+		// 	p = new Translation2d(p.getNorm(), minArmRotation);
+		// }
 
 		// TODO: add limiting box.
 
@@ -142,13 +154,22 @@ public class ArmTrajectoryFollower extends CommandBase {
 		SmartDashboard.putNumber("Real Arm x", m_pose.get().getX());
 		SmartDashboard.putNumber("Real Arm y", m_pose.get().getY());
 
-		double targetE = this.m_eController.calculate(this.m_pose.get().getNorm(), p.getNorm());
+
+		double targetE = this.m_eController.calculate(realExtension, expectedExtension);
 		double targetR = this.m_rController
-				.calculate(this.m_pose.get().getAngle().getDegrees(), p.getAngle().getDegrees())
+				.calculate(realRotation, expectedRotation)
 				+ (xKf * s.getPose2d().getX());// +velocityFeedForward;
 
 		setExtenionSpeed.accept(targetE);
+
 		setRotationSpeed.accept(targetR);
+
+		Logger.getInstance().recordOutput("/Arm/rotationAngle", realRotation);
+		Logger.getInstance().recordOutput("/Arm/expectedRotationAngle", expectedRotation);
+		Logger.getInstance().recordOutput("/Arm/extensionOutput", targetE);
+		Logger.getInstance().recordOutput("/Arm/RotationOutput", targetR);
+
+
 
 		lastEndpoint = endPointSupplier.get();
 		lastState = s;

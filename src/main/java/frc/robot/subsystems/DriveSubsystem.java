@@ -296,23 +296,23 @@ public class DriveSubsystem extends SubsystemBase {
 
 		// Vision Calculations
 
-		resultLeft = getEstimatedLeftGlobalPose(
-				swerveController.m_odometry.getEstimatedPosition());
-		resultRight = getEstimatedRightGlobalPose(
-				swerveController.m_odometry.getEstimatedPosition());
+		// resultLeft = getEstimatedLeftGlobalPose(
+		// 		swerveController.m_odometry.getEstimatedPosition());
+		// resultRight = getEstimatedRightGlobalPose(
+		// 		swerveController.m_odometry.getEstimatedPosition());
 
-		if (useVision) {
-			if (resultLeft.isPresent()) {
-				EstimatedRobotPose camPoseLeft = resultLeft.get();
-				swerveController.m_odometry.addVisionMeasurement(
-						camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
-			}
-			if (resultRight.isPresent()) {
-				EstimatedRobotPose camPoseRight = resultRight.get();
-				swerveController.m_odometry.addVisionMeasurement(
-						camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
-			}
-		}
+		// if (useVision) {
+		// 	if (resultLeft.isPresent()) {
+		// 		EstimatedRobotPose camPoseLeft = resultLeft.get();
+		// 		swerveController.m_odometry.addVisionMeasurement(
+		// 				camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
+		// 	}
+		// 	if (resultRight.isPresent()) {
+		// 		EstimatedRobotPose camPoseRight = resultRight.get();
+		// 		swerveController.m_odometry.addVisionMeasurement(
+		// 				camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
+		// 	}
+		// }
 
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
 				Robot.defaultPeriodSecs);
@@ -326,14 +326,14 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
-		if (resultLeft.isPresent()) {
-			EstimatedRobotPose camPoseLeft = resultLeft.get();
-			Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose);
-		}
-		if (resultRight.isPresent()) {
-			EstimatedRobotPose camPoseRight = resultRight.get();
-			Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose);
-		}
+		// if (resultLeft.isPresent()) {
+		// 	EstimatedRobotPose camPoseLeft = resultLeft.get();
+		// 	Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose);
+		// }
+		// if (resultRight.isPresent()) {
+		// 	EstimatedRobotPose camPoseRight = resultRight.get();
+		// 	Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose);
+		// }
 
 		if (follower.getLastState() != null)
 			Logger.getInstance().recordOutput("/DriveTrain/Trajectory",
