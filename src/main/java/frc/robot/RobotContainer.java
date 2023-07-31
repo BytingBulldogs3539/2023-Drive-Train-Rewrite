@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,8 +26,8 @@ public class RobotContainer {
 
 	public static DriveSubsystem driveSubsystem = new DriveSubsystem();
 	public IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
-	public ArmSubsystem elevatorSubsystem = new ArmSubsystem();
-	public LEDSubsystem ledSubsystem = new LEDSubsystem(true, elevatorSubsystem);
+	public ArmSubsystem armSubsystem = new ArmSubsystem();
+	public LEDSubsystem ledSubsystem = new LEDSubsystem(true, armSubsystem);
 
 	public static CommandXboxController driverController = new CommandXboxController(1);
 	public static CommandXboxController operatorController = new CommandXboxController(0);
@@ -47,32 +48,34 @@ public class RobotContainer {
 
 	private void configureBindings() {
 		SmartDashboard.putData(new CalibrateWheelOffsets().ignoringDisable(true));
+		SmartDashboard.putData(new CalibrateArmOffsets(armSubsystem).ignoringDisable(true));
+		SmartDashboard.putData(new CalibrateWristOffsets(armSubsystem).ignoringDisable(true));
 
 		driverController.start().onTrue(new ZeroGyroCommand(driveSubsystem));
 
 		operatorController.leftTrigger()
-				.whileTrue(new IntakeCommand(intakeSubsystem, elevatorSubsystem, ledSubsystem, 1, false));
+				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1, false));
 
 		operatorController.rightTrigger()
-				.whileTrue(new IntakeCommand(intakeSubsystem, elevatorSubsystem, ledSubsystem, -1, false));
+				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
 
-		operatorController.leftBumper().onTrue(new FlipArmSideCommand(elevatorSubsystem));
+		operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
 
 		driverController.y().onTrue(new SetLEDs(ledSubsystem, LEDState.CONE));
 		driverController.x().onTrue(new SetLEDs(ledSubsystem, LEDState.CUBE));
 		driverController.b().whileTrue(new AutoPoleAlign(ledSubsystem));
 
-		operatorController.a().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.intake));
-		operatorController.b().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.low));
-		operatorController.y().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.middle));
-		operatorController.x().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.high));
-		operatorController.povRight().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.HumanPlayer));
-		operatorController.povDown().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.groundIntake));
-		operatorController.povUp().onTrue(new SetArmHeight(this.elevatorSubsystem, Arm.cubeLowIntake));
+		operatorController.a().onTrue(new SetArmHeight(this.armSubsystem, Arm.intake));
+		operatorController.b().onTrue(new SetArmHeight(this.armSubsystem, Arm.low));
+		operatorController.y().onTrue(new SetArmHeight(this.armSubsystem, Arm.middle));
+		operatorController.x().onTrue(new SetArmHeight(this.armSubsystem, Arm.high));
+		operatorController.povRight().onTrue(new SetArmHeight(this.armSubsystem, Arm.HumanPlayer));
+		operatorController.povDown().onTrue(new SetArmHeight(this.armSubsystem, Arm.groundIntake));
+		operatorController.povUp().onTrue(new SetArmHeight(this.armSubsystem, Arm.cubeLowIntake));
 
-		operatorController.rightBumper().onTrue(new FlipWrist(elevatorSubsystem));
+		operatorController.rightBumper().onTrue(new FlipWrist(armSubsystem));
 
-		SmartDashboard.putData(new DisableBreakMode(elevatorSubsystem));
+		SmartDashboard.putData(new DisableBreakMode(armSubsystem));
 		// SmartDashboard.putData(new EnableLeftCamera());
 		// SmartDashboard.putData(new EnableRightCamera());
 	}
