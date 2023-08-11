@@ -38,8 +38,13 @@ public class DriveCommand extends CommandBase {
 
 		joystickRight = modifyJoystick(joystickRight);
 		joystickLeft = modifyJoystick(joystickLeft);
-
-		Rotation2d rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
+		Rotation2d rot;
+		if(RobotContainer.driverController.rightBumper().getAsBoolean()){
+			rot = Rotation2d.fromDegrees(0);
+		}
+		else{
+			rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
+		}
 		ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(),
 				joystickRight.getY(), rot);
 

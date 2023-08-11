@@ -209,7 +209,8 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void resetRobotRotation(Rotation2d rot) {
-		swerveController.resetPosition(new Pose2d(swerveController.getPoseMeters().getTranslation(), rot));
+		swerveController.getPigeon2().setYaw(rot.getDegrees());
+		System.out.println("chickenDuck");
 	}
 
 	public Pose2d getPose2d() {
