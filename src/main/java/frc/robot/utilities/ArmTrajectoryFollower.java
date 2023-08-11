@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 import org.frcteam3539.CTRE_Swerve_Lib.control.MultiTrajectory;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Path.State;
-import org.littletonrobotics.junction.Logger;
+//import org.littletonrobotics.junction.Logger;
 
 public class ArmTrajectoryFollower extends CommandBase {
 	private final Timer m_timer = new Timer();
@@ -163,10 +163,10 @@ public class ArmTrajectoryFollower extends CommandBase {
 
 		setRotationSpeed.accept(targetR);
 
-		Logger.getInstance().recordOutput("/Arm/rotationAngle", realRotation);
-		Logger.getInstance().recordOutput("/Arm/expectedRotationAngle", expectedRotation);
-		Logger.getInstance().recordOutput("/Arm/extensionOutput", targetE);
-		Logger.getInstance().recordOutput("/Arm/RotationOutput", targetR);
+		// Logger.getInstance().recordOutput("/Arm/rotationAngle", realRotation);
+		// Logger.getInstance().recordOutput("/Arm/expectedRotationAngle", expectedRotation);
+		// Logger.getInstance().recordOutput("/Arm/extensionOutput", targetE);
+		// Logger.getInstance().recordOutput("/Arm/RotationOutput", targetR);
 
 		lastEndpoint = endPointSupplier.get();
 		lastState = s;

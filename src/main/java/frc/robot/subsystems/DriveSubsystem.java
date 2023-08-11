@@ -16,7 +16,7 @@ import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveTrainConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveModuleConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.DrivetrainFeedforwardConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.HolonomicFeedforward;
-import org.littletonrobotics.junction.Logger;
+//import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -172,7 +172,7 @@ public class DriveSubsystem extends SubsystemBase {
 				new PidConstants(DriveConstants.RotationkP, DriveConstants.RotationkI, DriveConstants.RotationkD),
 				new HolonomicFeedforward(FEEDFORWARD_CONSTANTS));
 
-		tab.addNumber("Requested X", () -> {
+		/*tab.addNumber("Requested X", () -> {
 			if (follower.getLastState() != null) {
 				return follower.getLastState().getPathState().getPose2d().getX();
 			}
@@ -187,7 +187,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 		tab.addNumber("Chassis X Speed", () -> m_chassisSpeeds.vxMetersPerSecond);
 
-		tab.addNumber("Chassis Y Speed", () -> m_chassisSpeeds.vyMetersPerSecond);
+		tab.addNumber("Chassis Y Speed", () -> m_chassisSpeeds.vyMetersPerSecond);*/
 
 		setDefaultCommand(new DriveCommand(this));
 	}
@@ -320,52 +320,70 @@ public class DriveSubsystem extends SubsystemBase {
 
 		// Vision Calculations
 
-		// resultLeft = getEstimatedLeftGlobalPose(
-		// 		swerveController.m_odometry.getEstimatedPosition());
-		// resultRight = getEstimatedRightGlobalPose(
-		// 		swerveController.m_odometry.getEstimatedPosition());
+		if(DriverStation.getAlliance() == Alliance.Blue)
+			aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+
+		if(DriverStation.getAlliance() == Alliance.Red)
+			aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+
+		resultLeft = getEstimatedLeftGlobalPose(
+				swerveController.m_odometry.getEstimatedPosition());
+		resultRight = getEstimatedRightGlobalPose(
+				swerveController.m_odometry.getEstimatedPosition());
 
 		// if (useVision) {
-		// 	if (resultLeft.isPresent()) {
-		// 		EstimatedRobotPose camPoseLeft = resultLeft.get();
-		// 		swerveController.m_odometry.addVisionMeasurement(
-		// 				camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
-		// 	}
-		// 	if (resultRight.isPresent()) {
-		// 		EstimatedRobotPose camPoseRight = resultRight.get();
-		// 		swerveController.m_odometry.addVisionMeasurement(
-		// 				camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
-		// 	}
+
+		double visioncutoff = 4;
+			if (resultLeft.isPresent()) {
+				EstimatedRobotPose camPoseLeft = resultLeft.get();
+				synchronized(swerveController.m_odometry)
+				{
+					if(camPoseLeft.estimatedPose.toPose2d().getX()<visioncutoff)
+						swerveController.m_odometry.addVisionMeasurement(
+								camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
+				}
+			}
+			if (resultRight.isPresent()) {
+				EstimatedRobotPose camPoseRight = resultRight.get();
+				synchronized(swerveController.m_odometry)
+				{
+					//swerveController.m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+					if(camPoseRight.estimatedPose.toPose2d().getX()<visioncutoff)
+						swerveController.m_odometry.addVisionMeasurement(
+							camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
+				}
+				
+			}
 		// }
 
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
-				Robot.defaultPeriodSecs);
+				Robot.kDefaultPeriod);
 		// If we should be running a profile use those chassisspeeds instead.
 		if (driveSignalOpt.isPresent()) {
 			m_chassisSpeeds = driveSignalOpt.get();
 		}
 
 		swerveController.driveRobotCentric(m_chassisSpeeds);
-		log();
+		//log();
 	}
 
 	public void log() {
 		// if (resultLeft.isPresent()) {
 		// 	EstimatedRobotPose camPoseLeft = resultLeft.get();
-		// 	Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose);
+		// 	Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose.toPose2d());
 		// }
 		// if (resultRight.isPresent()) {
 		// 	EstimatedRobotPose camPoseRight = resultRight.get();
-		// 	Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose);
-		// }
+		//  	Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose.toPose2d());
+		//  }
 
-		if (follower.getLastState() != null)
-			Logger.getInstance().recordOutput("/DriveTrain/Trajectory",
-					follower.getLastState().getPathState().getPose2d());
-		Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
-		Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
-				new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,
-						m_chassisSpeeds.omegaRadiansPerSecond });
+		// if (follower.getLastState() != null)
+		// 	Logger.getInstance().recordOutput("/DriveTrain/Trajectory",
+		// 			follower.getLastState().getPathState().getPose2d());
+		// Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
+		// Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
+		// 		new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,
+		// 				m_chassisSpeeds.omegaRadiansPerSecond });
 
 	}
 }

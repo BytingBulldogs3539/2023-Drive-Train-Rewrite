@@ -16,7 +16,7 @@ import frc.robot.commands.drivetrain.MPLoader;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class SplineAuton extends SequentialCommandGroup {
 	/** Creates a new SplineAuton. */
-	MPLoader loader = new MPLoader("test.txt", true);
+	MPLoader loader = new MPLoader("test.txt", false);
 	private Command[] sequence = {
 			// Setup
 			new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),

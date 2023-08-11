@@ -19,7 +19,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import org.littletonrobotics.junction.Logger;
+//import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -162,18 +162,18 @@ public class ArmSubsystem extends SubsystemBase {
 		wrist.configMotionCruiseVelocity(500);
 		wristEncoder.setPosition(wristEncoder.getAbsolutePosition());
 
-		armTab.addNumber("Arm X", () -> {
-			return this.getArmPose().getX();
-		});
-		armTab.addNumber("Arm Y", () -> {
-			return this.getArmPose().getY();
-		});
-		armTab.addNumber("Arm Angle", () -> {
-			return getElevatorRotationAngle().getDegrees();
-		});
+		// armTab.addNumber("Arm X", () -> {
+		// 	return this.getArmPose().getX();
+		// });
+		// armTab.addNumber("Arm Y", () -> {
+		// 	return this.getArmPose().getY();
+		// });
+		// armTab.addNumber("Arm Angle", () -> {
+		// 	return getElevatorRotationAngle().getDegrees();
+		// });
 
-		armTab.add("Extension Motor Speed Output", extensionMotor.getMotorOutputPercent());
-		armTab.add("Arm Rotation Motor Speed Output", rotationMotor.getMotorOutputPercent());
+		// armTab.add("Extension Motor Speed Output", extensionMotor.getMotorOutputPercent());
+		// armTab.add("Arm Rotation Motor Speed Output", rotationMotor.getMotorOutputPercent());
 
 
 		wrist.set(ControlMode.Position, wrist.getSelectedSensorPosition());
@@ -380,22 +380,22 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
-
-		Logger.getInstance().recordOutput("/Arm/realArmMech", realArmMech);
-		Logger.getInstance().recordOutput("/Arm/expectedArmMech", expectedArmMech);
-
-	}
-
-	@Override
-	public void periodic() {
 		realExtension.setAngle(getElevatorRotationAngle());
 		realExtension.setLength(getElevatorLength());
 		expectedExtension.setAngle(follower.targetTranslation.getAngle());
 		expectedExtension.setLength(follower.targetTranslation.getNorm());
 
-		SmartDashboard.putBoolean("Cube Mode", (wristOrrientation == Wrist.cube) ? true : false);
-		SmartDashboard.putData("RealArm", realArmMech);
-		SmartDashboard.putData("ExpectedArm", expectedArmMech);
+		// Logger.getInstance().recordOutput("/Arm/realArmMech", realArmMech);
+		// Logger.getInstance().recordOutput("/Arm/expectedArmMech", expectedArmMech);
+
+	}
+
+	@Override
+	public void periodic() {
+		
+		//SmartDashboard.putBoolean("Cube Mode", (wristOrrientation == Wrist.cube) ? true : false);
+		// SmartDashboard.putData("RealArm", realArmMech);
+		// SmartDashboard.putData("ExpectedArm", expectedArmMech);
 
 		if (getElevatorRotationAngle().getDegrees() > ElevatorConstants.IntakeLimitMax) {
 			if (wristOrrientation == Wrist.cube && side == Sides.front) {
@@ -413,7 +413,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 		}
 
-		log();
+		//log();
 
 		 //wrist.set(ControlMode.PercentOutput, 0);
 	}

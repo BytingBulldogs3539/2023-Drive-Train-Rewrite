@@ -17,7 +17,7 @@ public class EnableRightCamera extends CommandBase {
   @Override
   public void initialize() {
     RobotContainer.driveSubsystem.useVision(true);
-    RobotContainer.driveSubsystem.setRightCamera(true);
+    //RobotContainer.driveSubsystem.setRightCamera(true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -27,7 +27,7 @@ public class EnableRightCamera extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.driveSubsystem.setRightCamera(false);
+    //RobotContainer.driveSubsystem.setRightCamera(false);
   }
 
   // Returns true when the command should end.
