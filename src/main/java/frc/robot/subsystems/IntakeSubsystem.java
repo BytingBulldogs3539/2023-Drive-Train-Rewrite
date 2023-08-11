@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.*;
 import frc.robot.commands.intake.RunGroundIntake;
@@ -47,6 +49,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	public void setGroundIntakeSpeed(double speedL, double speedR) {
 		groundIntakeRight.set(TalonSRXControlMode.PercentOutput, speedR);
 		groundIntakeLeft.set(TalonSRXControlMode.PercentOutput, speedL);
+	}
+
+	public void log() {
+		Logger logger = Logger.getInstance();
+
+		logger.recordOutput("/Intake/Throttle", intakeMotor.getMotorOutputPercent());
 	}
 
 	@Override

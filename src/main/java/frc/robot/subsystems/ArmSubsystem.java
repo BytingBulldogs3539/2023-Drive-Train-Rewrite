@@ -19,7 +19,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-//import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -380,14 +380,15 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
+		Logger logger = Logger.getInstance();
+
 		realExtension.setAngle(getElevatorRotationAngle());
 		realExtension.setLength(getElevatorLength());
 		expectedExtension.setAngle(follower.targetTranslation.getAngle());
 		expectedExtension.setLength(follower.targetTranslation.getNorm());
 
-		// Logger.getInstance().recordOutput("/Arm/realArmMech", realArmMech);
-		// Logger.getInstance().recordOutput("/Arm/expectedArmMech", expectedArmMech);
-
+		logger.recordOutput("/Arm/RealArmMech", realArmMech);
+		logger.recordOutput("/Arm/ExpectedArmMech", expectedArmMech);
 	}
 
 	@Override
@@ -412,8 +413,6 @@ public class ArmSubsystem extends SubsystemBase {
 			}
 
 		}
-
-		//log();
 
 		 //wrist.set(ControlMode.PercentOutput, 0);
 	}

@@ -16,7 +16,7 @@ import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveTrainConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveModuleConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.DrivetrainFeedforwardConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.util.HolonomicFeedforward;
-//import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -358,33 +358,39 @@ public class DriveSubsystem extends SubsystemBase {
 		// }
 
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
-				Robot.kDefaultPeriod);
+				Robot.defaultPeriodSecs);
 		// If we should be running a profile use those chassisspeeds instead.
 		if (driveSignalOpt.isPresent()) {
 			m_chassisSpeeds = driveSignalOpt.get();
 		}
 
 		swerveController.driveRobotCentric(m_chassisSpeeds);
-		//log();
 	}
 
 	public void log() {
-		// if (resultLeft.isPresent()) {
-		// 	EstimatedRobotPose camPoseLeft = resultLeft.get();
-		// 	Logger.getInstance().recordOutput("/DriveTrain/leftCamPose", camPoseLeft.estimatedPose.toPose2d());
-		// }
-		// if (resultRight.isPresent()) {
-		// 	EstimatedRobotPose camPoseRight = resultRight.get();
-		//  	Logger.getInstance().recordOutput("/DriveTrain/rightCamPose", camPoseRight.estimatedPose.toPose2d());
-		//  }
+		Logger logger = Logger.getInstance();
 
-		// if (follower.getLastState() != null)
-		// 	Logger.getInstance().recordOutput("/DriveTrain/Trajectory",
-		// 			follower.getLastState().getPathState().getPose2d());
-		// Logger.getInstance().recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
-		// Logger.getInstance().recordOutput("/DriveTrain/RequestedChassisSpeeds",
-		// 		new double[] { m_chassisSpeeds.vxMetersPerSecond, m_chassisSpeeds.vyMetersPerSecond,
-		// 				m_chassisSpeeds.omegaRadiansPerSecond });
+		Pose2d leftCamPose = resultLeft.isPresent()?
+			resultLeft.get().estimatedPose.toPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
+		logger.recordOutput("/DriveTrain/LeftCamPose", leftCamPose);
+		
+		Pose2d rightCamPose = resultRight.isPresent()?
+			resultRight.get().estimatedPose.toPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
+		logger.recordOutput("/DriveTrain/RightCamPose", rightCamPose);
 
+		Pose2d trajectory = follower.getLastState() != null?
+			follower.getLastState().getPathState().getPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
+		logger.recordOutput("/DriveTrain/Trajectory", trajectory);
+
+		logger.recordOutput("/DriveTrain/Odometry", swerveController.getPoseMeters());
+		
+		logger.recordOutput(
+			"/DriveTrain/RequestedChassisSpeeds",
+			new double[] { 
+				m_chassisSpeeds.vxMetersPerSecond,
+				m_chassisSpeeds.vyMetersPerSecond,
+				m_chassisSpeeds.omegaRadiansPerSecond
+			}
+		);
 	}
 }

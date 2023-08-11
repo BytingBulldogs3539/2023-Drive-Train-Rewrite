@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.ColorFlowAnimation;
 import com.ctre.phoenix.led.RainbowAnimation;
@@ -153,4 +155,7 @@ public class LEDSubsystem {
                 break;
         }
     }
+
+    public void log() { }
+
 }
