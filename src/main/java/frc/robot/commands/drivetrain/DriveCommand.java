@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
@@ -39,14 +40,39 @@ public class DriveCommand extends CommandBase {
 		joystickRight = modifyJoystick(joystickRight);
 		joystickLeft = modifyJoystick(joystickLeft);
 		Rotation2d rot;
-		if(RobotContainer.driverController.rightBumper().getAsBoolean()){
+		if (RobotContainer.driverController.rightBumper().getAsBoolean()) {
 			rot = Rotation2d.fromDegrees(0);
-		}
-		else{
+		} else {
 			rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
 		}
-		ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(joystickLeft.getX(), joystickLeft.getY(),
-				joystickRight.getY(), rot);
+		ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+				joystickLeft.getX() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity()
+						* DriveConstants.driveSpeedMultiplier,
+				joystickLeft.getY() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity()
+						* DriveConstants.driveSpeedMultiplier,
+				joystickRight.getY() * RobotContainer.driveSubsystem.swerveController.getMaxRotationVelocity()
+						* DriveConstants.rotationSpeedMultiplier,
+				rot);
+
+		if (RobotContainer.driverController.rightTrigger(0.5).getAsBoolean()) {
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+					joystickLeft.getX() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity(),
+					joystickLeft.getY() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity(),
+					joystickRight.getY() * RobotContainer.driveSubsystem.swerveController.getMaxRotationVelocity()
+							* DriveConstants.turboRotationSpeedMultiplier,
+					rot);
+		}
+		if (RobotContainer.driverController.leftTrigger(0.5).getAsBoolean()) {
+			chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+					joystickLeft.getX() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity()
+							* DriveConstants.slowSpeedMultiplier,
+					joystickLeft.getY() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity()
+							* DriveConstants.slowSpeedMultiplier,
+					joystickRight.getY() * RobotContainer.driveSubsystem.swerveController.getMaxRotationVelocity()
+							* DriveConstants.slowRotationSpeedMultiplier,
+					rot);
+
+		}
 
 		driveSubsystem.drive(chassisSpeeds);
 	}
@@ -55,7 +81,6 @@ public class DriveCommand extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 	}
-
 
 	private static double deadband(double value, double deadband) {
 		if (Math.abs(value) > deadband) {

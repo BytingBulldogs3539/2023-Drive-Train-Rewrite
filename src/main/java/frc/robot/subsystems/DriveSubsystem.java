@@ -334,7 +334,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 		// if (useVision) {
 
-		double visioncutoff = 4;
+		double visioncutoff = 3;
 			if (resultLeft.isPresent()) {
 				EstimatedRobotPose camPoseLeft = resultLeft.get();
 				synchronized(swerveController.m_odometry)

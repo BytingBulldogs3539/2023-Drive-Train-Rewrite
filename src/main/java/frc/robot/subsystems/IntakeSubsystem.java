@@ -27,18 +27,18 @@ public class IntakeSubsystem extends SubsystemBase {
 		intakeMotor.setNeutralMode(NeutralMode.Brake);
 		intakeMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 60, 100));
 
-		groundIntakeLeft = new TalonSRX(IDConstants.groundIntakeLeftID);
-		groundIntakeLeft.setNeutralMode(NeutralMode.Coast);
-		groundIntakeLeft.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 60, 100));
+		// groundIntakeLeft = new TalonSRX(IDConstants.groundIntakeLeftID);
+		// groundIntakeLeft.setNeutralMode(NeutralMode.Coast);
+		// groundIntakeLeft.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 60, 100));
 
-		groundIntakeRight = new TalonSRX(IDConstants.groundIntakeRightID);
-		groundIntakeRight.setNeutralMode(NeutralMode.Coast);
-		groundIntakeRight.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 60, 100));
+		// groundIntakeRight = new TalonSRX(IDConstants.groundIntakeRightID);
+		// groundIntakeRight.setNeutralMode(NeutralMode.Coast);
+		// groundIntakeRight.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 60, 100));
 
 		setDefaultCommand(new RunGroundIntake(this));
 
-		groundIntakeLeft.setInverted(true);
-		groundIntakeRight.setInverted(true);
+		// groundIntakeLeft.setInverted(true);
+		// groundIntakeRight.setInverted(true);
 
 	}
 
@@ -47,8 +47,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public void setGroundIntakeSpeed(double speedL, double speedR) {
-		groundIntakeRight.set(TalonSRXControlMode.PercentOutput, speedR);
-		groundIntakeLeft.set(TalonSRXControlMode.PercentOutput, speedL);
+		//groundIntakeRight.set(TalonSRXControlMode.PercentOutput, speedR);
+		//groundIntakeLeft.set(TalonSRXControlMode.PercentOutput, speedL);
 	}
 
 	public void log() {

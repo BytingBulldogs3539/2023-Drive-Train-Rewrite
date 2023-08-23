@@ -62,7 +62,7 @@ public class RobotContainer {
 		operatorController.rightTrigger()
 				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
 
-		operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
+		//operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
 
 		driverController.y().onTrue(new SetLEDs(ledSubsystem, LEDState.CONE));
 		driverController.x().onTrue(new SetLEDs(ledSubsystem, LEDState.CUBE));
