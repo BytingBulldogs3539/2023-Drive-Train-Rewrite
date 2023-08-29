@@ -142,17 +142,17 @@ public class ArmTrajectoryFollower extends CommandBase {
 
 		// TODO: add limiting box.
 
-		SmartDashboard.putNumber("Expected Arm X", s.getPose2d().getX());
-		SmartDashboard.putNumber("Expected Arm Y", s.getPose2d().getY());
+		// SmartDashboard.putNumber("Expected Arm X", s.getPose2d().getX());
+		// SmartDashboard.putNumber("Expected Arm Y", s.getPose2d().getY());
 
-		SmartDashboard.putNumber("Expected Extension", p.getNorm());
-		SmartDashboard.putNumber("Expected Rotation", p.getAngle().getDegrees());
+		// SmartDashboard.putNumber("Expected Extension", p.getNorm());
+		// SmartDashboard.putNumber("Expected Rotation", p.getAngle().getDegrees());
 
-		SmartDashboard.putNumber("Real Extension", m_pose.get().getNorm());
-		SmartDashboard.putNumber("Real Rotation", m_pose.get().getAngle().getDegrees());
+		// SmartDashboard.putNumber("Real Extension", m_pose.get().getNorm());
+		// SmartDashboard.putNumber("Real Rotation", m_pose.get().getAngle().getDegrees());
 
-		SmartDashboard.putNumber("Real Arm x", m_pose.get().getX());
-		SmartDashboard.putNumber("Real Arm y", m_pose.get().getY());
+		// SmartDashboard.putNumber("Real Arm x", m_pose.get().getX());
+		// SmartDashboard.putNumber("Real Arm y", m_pose.get().getY());
 
 		double targetE = this.m_eController.calculate(realExtension, expectedExtension);
 		double targetR = this.m_rController

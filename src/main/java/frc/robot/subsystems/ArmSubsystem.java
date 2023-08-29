@@ -380,15 +380,15 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
-		Logger logger = Logger.getInstance();
+		// Logger logger = Logger.getInstance();
 
-		realExtension.setAngle(getElevatorRotationAngle());
-		realExtension.setLength(getElevatorLength());
-		expectedExtension.setAngle(follower.targetTranslation.getAngle());
-		expectedExtension.setLength(follower.targetTranslation.getNorm());
+		// realExtension.setAngle(getElevatorRotationAngle());
+		// realExtension.setLength(getElevatorLength());
+		// expectedExtension.setAngle(follower.targetTranslation.getAngle());
+		// expectedExtension.setLength(follower.targetTranslation.getNorm());
 
-		logger.recordOutput("/Arm/RealArmMech", realArmMech);
-		logger.recordOutput("/Arm/ExpectedArmMech", expectedArmMech);
+		// logger.recordOutput("/Arm/RealArmMech", realArmMech);
+		// logger.recordOutput("/Arm/ExpectedArmMech", expectedArmMech);
 	}
 
 	@Override

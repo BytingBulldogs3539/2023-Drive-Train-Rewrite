@@ -63,46 +63,9 @@ public class DriveSubsystem extends SubsystemBase {
 
 	private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-	// Vision Variables
-	AprilTagFieldLayout aprilTagFieldLayout;
-
-	public PhotonCamera leftCam;
-	Transform3d robotToLeftCam = new Transform3d(
-			new Translation3d(-0.1746 - .07 + 0.08, 0.2885 + 0.05, 0.3876),
-			new Rotation3d(Math.toRadians(0), 0, Math.toRadians(4)));
-
-	public PhotonCamera rightCam;
-	Transform3d robotToRightCam = new Transform3d(
-			new Translation3d(-0.1746 - .07 + 0.09, -0.2885 - 0.01, 0.3876),
-			new Rotation3d(Math.toRadians(0), 0, Math.toRadians(-4)));
-			
-	PhotonPoseEstimator leftPhotonPoseEstimator;
-	PhotonPoseEstimator rightPhotonPoseEstimator;
-	Optional<EstimatedRobotPose> resultLeft;
-	Optional<EstimatedRobotPose> resultRight;
-	boolean useVision = false;
 
 	public DriveSubsystem() {
-		try {
-			aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-
-		} catch (Exception e) {
-			System.out.println("ERROR Loading April Tag DATA");
-			aprilTagFieldLayout = null;
-		}
-
-		leftCam = new PhotonCamera("LeftCam");
-		leftPhotonPoseEstimator = new PhotonPoseEstimator(
-				aprilTagFieldLayout,
-				PoseStrategy.MULTI_TAG_PNP,
-				leftCam,
-				robotToLeftCam);
-		rightCam = new PhotonCamera("RightCam");
-		rightPhotonPoseEstimator = new PhotonPoseEstimator(
-				aprilTagFieldLayout,
-				PoseStrategy.MULTI_TAG_PNP,
-				rightCam,
-				robotToRightCam);
+	
 		// LoggedPowerDistribution.getInstance(moduleId, moduleType)
 		tab = Shuffleboard.getTab("Drivetrain");
 
@@ -236,10 +199,10 @@ public class DriveSubsystem extends SubsystemBase {
 	 */
 	public void saveModuleOffsets()
 	{
-		DriveConstants.FLSteerOffset = -swerveController.getModules()[0].getPosition().angle.getRotations();
-		DriveConstants.FRSteerOffset = -swerveController.getModules()[1].getPosition().angle.getRotations();
-		DriveConstants.BLSteerOffset = -swerveController.getModules()[2].getPosition().angle.getRotations();
-		DriveConstants.BRSteerOffset = -swerveController.getModules()[3].getPosition().angle.getRotations();
+		DriveConstants.FLSteerOffset = -swerveController.getModules()[0].getPosition(false).angle.getRotations();
+		DriveConstants.FRSteerOffset = -swerveController.getModules()[1].getPosition(false).angle.getRotations();
+		DriveConstants.BLSteerOffset = -swerveController.getModules()[2].getPosition(false).angle.getRotations();
+		DriveConstants.BRSteerOffset = -swerveController.getModules()[3].getPosition(false).angle.getRotations();
 		RobotContainer.driveConstants.save();
 		swerveController.getModules()[0].setCANcoderOffset(DriveConstants.FLSteerOffset);
 		swerveController.getModules()[1].setCANcoderOffset(DriveConstants.FRSteerOffset);
@@ -247,116 +210,8 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveController.getModules()[3].setCANcoderOffset(DriveConstants.FRSteerOffset);
 	}
 
-	// Vision Methods
-	public Optional<EstimatedRobotPose> getEstimatedLeftGlobalPose(Pose2d prevEstimatedRobotPose) {
-		leftPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-		return leftPhotonPoseEstimator.update();
-	}
-
-	public Optional<EstimatedRobotPose> getEstimatedRightGlobalPose(Pose2d prevEstimatedRobotPose) {
-		rightPhotonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-		return rightPhotonPoseEstimator.update();
-	}
-
-	public void useVision(boolean useVision) {
-		this.useVision = useVision;
-	}
-
-	public void setVisionWeights(double visionX, double visionY, int visionDeg) {
-		swerveController.m_odometry.setVisionMeasurementStdDevs(
-				VecBuilder.fill(visionX, visionY, Units.degreesToRadians(visionDeg)));
-	}
-
-	public void setLeftCamera(boolean on) {
-		if (DriverStation.getAlliance() == Alliance.Red)
-			aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-		else
-			aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-
-		leftCam.setDriverMode(false);
-		leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-	}
-
-	public void setRightCamera(boolean on) {
-		if (DriverStation.getAlliance() == Alliance.Red)
-			aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-		else
-			aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-
-		rightCam.setDriverMode(false);
-		rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-	}
-
-	public void setStartPosition(StartPosition position) {
-		// Configure which camera to use in auton based on start position
-		switch (position) {
-			case RED_SMOOTH:
-				aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-				rightCam.setDriverMode(false);
-				leftCam.setDriverMode(true);
-				break;
-			case RED_CABLE:
-				aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-				rightCam.setDriverMode(true);
-				leftCam.setDriverMode(false);
-				break;
-			case BLUE_SMOOTH:
-				aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-				rightCam.setDriverMode(true);
-				leftCam.setDriverMode(false);
-				break;
-			case BLUE_CABLE:
-				aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-				rightCam.setDriverMode(false);
-				leftCam.setDriverMode(true);
-				break;
-		}
-		// Update the april tag layout based on our start position
-		leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-		rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-	}
-
 	@Override
 	public void periodic() {
-
-		// Vision Calculations
-
-		if(DriverStation.getAlliance() == Alliance.Blue)
-			aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-
-		if(DriverStation.getAlliance() == Alliance.Red)
-			aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-
-		resultLeft = getEstimatedLeftGlobalPose(
-				swerveController.m_odometry.getEstimatedPosition());
-		resultRight = getEstimatedRightGlobalPose(
-				swerveController.m_odometry.getEstimatedPosition());
-
-		// if (useVision) {
-
-		double visioncutoff = 3;
-			if (resultLeft.isPresent()) {
-				EstimatedRobotPose camPoseLeft = resultLeft.get();
-				synchronized(swerveController.m_odometry)
-				{
-					if(camPoseLeft.estimatedPose.toPose2d().getX()<visioncutoff)
-						swerveController.m_odometry.addVisionMeasurement(
-								camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
-				}
-			}
-			if (resultRight.isPresent()) {
-				EstimatedRobotPose camPoseRight = resultRight.get();
-				synchronized(swerveController.m_odometry)
-				{
-					//swerveController.m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
-					if(camPoseRight.estimatedPose.toPose2d().getX()<visioncutoff)
-						swerveController.m_odometry.addVisionMeasurement(
-							camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
-				}
-				
-			}
-		// }
-
 		var driveSignalOpt = follower.update(swerveController.getPoseMeters(), Timer.getFPGATimestamp(),
 				Robot.defaultPeriodSecs);
 		// If we should be running a profile use those chassisspeeds instead.
@@ -369,15 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public void log() {
 		Logger logger = Logger.getInstance();
-
-		Pose2d leftCamPose = resultLeft.isPresent()?
-			resultLeft.get().estimatedPose.toPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
-		logger.recordOutput("/DriveTrain/LeftCamPose", leftCamPose);
 		
-		Pose2d rightCamPose = resultRight.isPresent()?
-			resultRight.get().estimatedPose.toPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
-		logger.recordOutput("/DriveTrain/RightCamPose", rightCamPose);
-
 		Pose2d trajectory = follower.getLastState() != null?
 			follower.getLastState().getPathState().getPose2d() : new Pose2d(-1, -1, new Rotation2d(0));
 		logger.recordOutput("/DriveTrain/Trajectory", trajectory);

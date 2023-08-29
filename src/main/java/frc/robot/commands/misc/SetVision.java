@@ -18,7 +18,7 @@ public class SetVision extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.driveSubsystem.useVision(useVision);
+    RobotContainer.visionSubsystem.useVision(useVision);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

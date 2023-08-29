@@ -27,6 +27,7 @@ public class RobotContainer {
 	public static IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 	public static ArmSubsystem armSubsystem = new ArmSubsystem();
 	public static LEDSubsystem ledSubsystem = new LEDSubsystem(true, armSubsystem);
+	public static VisionSubsystem visionSubsystem = new VisionSubsystem(driveSubsystem);
 
 	public static CommandXboxController driverController = new CommandXboxController(1);
 	public static CommandXboxController operatorController = new CommandXboxController(0);
@@ -40,6 +41,7 @@ public class RobotContainer {
 	public RobotContainer() {
 		putAutons();
 		configureBindings();
+		visionSubsystem.start();
 	}
 
 	private void putAutons() {

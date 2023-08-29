@@ -52,9 +52,9 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public void log() {
-		Logger logger = Logger.getInstance();
+		//Logger logger = Logger.getInstance();
 
-		logger.recordOutput("/Intake/Throttle", intakeMotor.getMotorOutputPercent());
+		//logger.recordOutput("/Intake/Throttle", intakeMotor.getMotorOutputPercent());
 	}
 
 	@Override

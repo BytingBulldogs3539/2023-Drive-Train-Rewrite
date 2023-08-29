@@ -16,7 +16,7 @@ public class EnableRightCamera extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    RobotContainer.driveSubsystem.useVision(true);
+    RobotContainer.visionSubsystem.useVision(true);
     //RobotContainer.driveSubsystem.setRightCamera(true);
   }
 
