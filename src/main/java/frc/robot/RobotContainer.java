@@ -45,8 +45,15 @@ public class RobotContainer {
 	}
 
 	private void putAutons() {
-		chooser.setDefaultOption("Follow Simple Line", new Follow_Simple_Line());
+		chooser.addOption("Follow Simple Line", new Follow_Simple_Line());
 		chooser.setDefaultOption("Follow Simple Spline", new SplineAuton());
+		chooser.addOption("ConeCubeHigh", new ConeCubeHigh());
+		chooser.addOption("BlueHighConeBack", new BlueHighConeBack());
+		chooser.addOption("RedHighConeBack", new RedHighConeBack());
+		chooser.addOption("LeftRedHighConeBack", new LeftRedHighConeBack());
+		chooser.addOption("RightBlueHighConeBack", new RightBlueHighConeBack());
+		chooser.addOption("BlueConeBackBalance", new BlueConeBackBalance());
+		chooser.addOption("RedConeBackBalance", new RedConeBackBalance());
 
 		SmartDashboard.putData(chooser);
 	}
@@ -64,7 +71,7 @@ public class RobotContainer {
 		operatorController.rightTrigger()
 				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
 
-		//operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
+		operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
 
 		driverController.y().onTrue(new SetLEDs(ledSubsystem, LEDState.CONE));
 		driverController.x().onTrue(new SetLEDs(ledSubsystem, LEDState.CUBE));

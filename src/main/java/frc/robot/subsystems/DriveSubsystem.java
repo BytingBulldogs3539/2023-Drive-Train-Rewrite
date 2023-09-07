@@ -123,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveController = new CTRSwerveDrivetrain(tab, driveTrainConstants, frontLeft, frontRight, backLeft,
 				backRight);
 
-		swerveController.setGyro(0);
+		swerveController.setGyro(180);
 
 		DrivetrainFeedforwardConstants FEEDFORWARD_CONSTANTS = new DrivetrainFeedforwardConstants(
 				DriveConstants.TranslationkV,
@@ -173,7 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
 
 	public void resetRobotRotation(Rotation2d rot) {
 		swerveController.getPigeon2().setYaw(rot.getDegrees());
-		System.out.println("chickenDuck");
+		
 	}
 
 	public Pose2d getPose2d() {

@@ -30,12 +30,12 @@ public class VisionSubsystem extends Thread {
 
     public PhotonCamera leftCam;
     Transform3d robotToLeftCam = new Transform3d(
-            new Translation3d(-0.1746 - .07 + 0.08, 0.2885 + 0.05, 0.3876),
+            new Translation3d(-0.1746 - .07 + .02 + 0.08, 0.2885 + 0.05 - .03, 0.3876),
             new Rotation3d(Math.toRadians(0), 0, Math.toRadians(14)));
 
     public PhotonCamera rightCam;
     Transform3d robotToRightCam = new Transform3d(
-            new Translation3d(-0.1746 - .07 + 0.09, -0.2885 - 0.01, 0.3876),
+            new Translation3d(-0.1746 + .05 + .02, -0.2885 - .1 + .05, 0.3876),
             new Rotation3d(Math.toRadians(0), 0, Math.toRadians(-14)));
 
     PhotonPoseEstimator leftPhotonPoseEstimator;
@@ -92,26 +92,6 @@ public class VisionSubsystem extends Thread {
                 VecBuilder.fill(visionX, visionY, Units.degreesToRadians(visionDeg)));
     }
 
-    public void setLeftCamera(boolean on) {
-        if (DriverStation.getAlliance() == Alliance.Red)
-            aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-        else
-            aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-
-        leftCam.setDriverMode(false);
-        leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-    }
-
-    public void setRightCamera(boolean on) {
-        if (DriverStation.getAlliance() == Alliance.Red)
-            aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-        else
-            aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-
-        rightCam.setDriverMode(false);
-        rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
-    }
-
     public void setStartPosition(DriveSubsystem.StartPosition position) {
         // Configure which camera to use in auton based on start position
         switch (position) {
@@ -158,38 +138,39 @@ public class VisionSubsystem extends Thread {
             this.resultLeft = getEstimatedLeftGlobalPose();
             this.resultRight = getEstimatedRightGlobalPose();
 
-            // if (useVision) {
+            if (useVision) {
 
-            double visioncutoff = 4;
-            if (resultLeft.isPresent()) {
-                EstimatedRobotPose camPoseLeft = resultLeft.get();
-                if (camPoseLeft.timestampSeconds != leftLastTimeStamp) {
-                    synchronized (driveSub.swerveController.m_odometry) {
-                        if (camPoseLeft.estimatedPose.toPose2d().getX() < visioncutoff) {
-                            driveSub.swerveController.m_odometry.addVisionMeasurement(
-                                    camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
+                double visioncutoff = 4;
+                if (resultLeft.isPresent()) {
+                    EstimatedRobotPose camPoseLeft = resultLeft.get();
+                    if (camPoseLeft.timestampSeconds != leftLastTimeStamp) {
+                        synchronized (driveSub.swerveController.m_odometry) {
+                            if (camPoseLeft.estimatedPose.toPose2d().getX() < visioncutoff) {
+                                driveSub.swerveController.m_odometry.addVisionMeasurement(
+                                        camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
 
-                            logger.recordOutput("/DriveTrain/LeftCamPose", camPoseLeft.estimatedPose.toPose2d());
+                                logger.recordOutput("/DriveTrain/LeftCamPose", camPoseLeft.estimatedPose.toPose2d());
 
+                            }
                         }
                     }
+                    leftLastTimeStamp = camPoseLeft.timestampSeconds;
                 }
-                leftLastTimeStamp = camPoseLeft.timestampSeconds;
-            }
-            if (resultRight.isPresent()) {
-                EstimatedRobotPose camPoseRight = resultRight.get();
-                if (camPoseRight.timestampSeconds != rightLastTimeStamp) {
-                    synchronized (driveSub.swerveController.m_odometry) {
-                        // swerveController.m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(0.5,
-                        // 0.5, Units.degreesToRadians(10));
-                        if (camPoseRight.estimatedPose.toPose2d().getX() < visioncutoff) {
-                            logger.recordOutput("/DriveTrain/RightCamPose", camPoseRight.estimatedPose.toPose2d());
-                            driveSub.swerveController.m_odometry.addVisionMeasurement(
-                                    camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
+                if (resultRight.isPresent()) {
+                    EstimatedRobotPose camPoseRight = resultRight.get();
+                    if (camPoseRight.timestampSeconds != rightLastTimeStamp) {
+                        synchronized (driveSub.swerveController.m_odometry) {
+                            // swerveController.m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(0.5,
+                            // 0.5, Units.degreesToRadians(10));
+                            if (camPoseRight.estimatedPose.toPose2d().getX() < visioncutoff) {
+                                logger.recordOutput("/DriveTrain/RightCamPose", camPoseRight.estimatedPose.toPose2d());
+                                driveSub.swerveController.m_odometry.addVisionMeasurement(
+                                        camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
+                            }
                         }
                     }
+                    rightLastTimeStamp = camPoseRight.timestampSeconds;
                 }
-                rightLastTimeStamp = camPoseRight.timestampSeconds;
             }
         }
     }
