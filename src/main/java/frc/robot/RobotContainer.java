@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.ArmSubsystem.Arm;
+import frc.robot.subsystems.ArmSubsystem.Sides;
+import frc.robot.subsystems.ArmSubsystem.Wrist;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 import frc.robot.utilities.LogController;
 import frc.robot.commands.drivetrain.*;
@@ -47,7 +49,7 @@ public class RobotContainer {
 	private void putAutons() {
 		chooser.addOption("Follow Simple Line", new Follow_Simple_Line());
 		chooser.setDefaultOption("Follow Simple Spline", new SplineAuton());
-		chooser.addOption("ConeCubeHigh", new ConeCubeHigh());
+		chooser.addOption("BlueConeCubeHigh", new BlueConeCubeHigh());
 		chooser.addOption("BlueHighConeBack", new BlueHighConeBack());
 		chooser.addOption("RedHighConeBack", new RedHighConeBack());
 		chooser.addOption("LeftRedHighConeBack", new LeftRedHighConeBack());
@@ -65,31 +67,33 @@ public class RobotContainer {
 
 		driverController.start().onTrue(new ZeroGyroCommand(driveSubsystem));
 
-		operatorController.leftTrigger()
-				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1, false));
+		operatorController.leftTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, true));
+		operatorController.leftTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, false));
 
-		operatorController.rightTrigger()
-				.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
+		//operatorController.leftTrigger()
+		//		.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1, false));
 
-		operatorController.leftBumper().onTrue(new FlipArmSideCommand(armSubsystem));
+		//operatorController.rightTrigger()
+		//		.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
+
+		operatorController.leftBumper().onTrue(new SetArmSide(armSubsystem, Sides.front));
 
 		driverController.y().onTrue(new SetLEDs(ledSubsystem, LEDState.CONE));
 		driverController.x().onTrue(new SetLEDs(ledSubsystem, LEDState.CUBE));
-		driverController.b().whileTrue(new AutoPoleAlign(ledSubsystem));
+		//driverController.b().whileTrue(new AutoPoleAlign(ledSubsystem));
 
 		operatorController.a().onTrue(new SetArmHeight(armSubsystem, Arm.intake));
 		operatorController.b().onTrue(new SetArmHeight(armSubsystem, Arm.low));
 		operatorController.y().onTrue(new SetArmHeight(armSubsystem, Arm.middle));
 		operatorController.x().onTrue(new SetArmHeight(armSubsystem, Arm.high));
 		operatorController.povRight().onTrue(new SetArmHeight(armSubsystem, Arm.HumanPlayer));
-		operatorController.povDown().onTrue(new SetArmHeight(armSubsystem, Arm.groundIntake));
+		operatorController.povDown().onTrue(new ConfigureArm(armSubsystem, Sides.front, Arm.groundIntake, Wrist.cone));
 		operatorController.povUp().onTrue(new SetArmHeight(armSubsystem, Arm.cubeLowIntake));
+		
 
 		operatorController.rightBumper().onTrue(new FlipWrist(armSubsystem));
 
 		SmartDashboard.putData(new DisableBreakMode(armSubsystem));
-		// SmartDashboard.putData(new EnableLeftCamera());
-		// SmartDashboard.putData(new EnableRightCamera());
 	}
 
 	public Command getAutonomousCommand() {

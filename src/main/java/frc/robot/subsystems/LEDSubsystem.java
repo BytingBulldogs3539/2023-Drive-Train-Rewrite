@@ -9,11 +9,12 @@ import com.ctre.phoenix.led.StrobeAnimation;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.*;
 import frc.robot.subsystems.ArmSubsystem.Arm;
 import frc.robot.subsystems.ArmSubsystem.Wrist;
 
-public class LEDSubsystem {
+public class LEDSubsystem extends SubsystemBase{
     boolean enabled;
     CANdle candle;
 
@@ -58,7 +59,7 @@ public class LEDSubsystem {
     }
 
     public void intake() {
-        if (!enabled || pickedUp != null) return;
+        if (!enabled) return;
 
         if (elevatorSub.getWristOrientation() == Wrist.cone
               || elevatorSub.getArmLevel() == Arm.groundIntake) {
@@ -81,17 +82,17 @@ public class LEDSubsystem {
         }
     }
 
-    public void pieceTaken(Arm arm, Wrist wrist) {
-        if (!enabled || pickedUp != null) return;
+    // public void pieceTaken(Arm arm, Wrist wrist) {
+    //     if (!enabled || pickedUp != null) return;
 
-        if (wrist == Wrist.cone || arm == Arm.groundIntake) {
-            setLEDs(LEDState.CONE);
-            pickedUp = Piece.CONE;
-        } else {
-            setLEDs(LEDState.CUBE);
-            pickedUp = Piece.CUBE;
-        }
-    }
+    //     if (wrist == Wrist.cone || arm == Arm.groundIntake) {
+    //         setLEDs(LEDState.CONE);
+    //         pickedUp = Piece.CONE;
+    //     } else {
+    //         setLEDs(LEDState.CUBE);
+    //         pickedUp = Piece.CUBE;
+    //     }
+    // }
 
     public void saveState() {
         if (!enabled) return;
@@ -102,6 +103,11 @@ public class LEDSubsystem {
         if (!enabled || this.savedState == null) return;
         this.setLEDs(savedState);
     }
+
+    @Override
+	public void periodic() {
+
+	}
 
     public void setLEDs(LEDState state) {
         if (!enabled || this.state == state) return;
