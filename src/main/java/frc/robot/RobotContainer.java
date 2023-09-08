@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +42,8 @@ public class RobotContainer {
 	);
 
 	public RobotContainer() {
+		
+		DriverStation.silenceJoystickConnectionWarning(true);
 		putAutons();
 		configureBindings();
 		visionSubsystem.start();
@@ -50,6 +53,7 @@ public class RobotContainer {
 		chooser.addOption("Follow Simple Line", new Follow_Simple_Line());
 		chooser.setDefaultOption("Follow Simple Spline", new SplineAuton());
 		chooser.addOption("BlueConeCubeHigh", new BlueConeCubeHigh());
+		chooser.addOption("RedConeCubeHigh", new RedConeCubeHigh());
 		chooser.addOption("BlueHighConeBack", new BlueHighConeBack());
 		chooser.addOption("RedHighConeBack", new RedHighConeBack());
 		chooser.addOption("LeftRedHighConeBack", new LeftRedHighConeBack());
@@ -68,7 +72,7 @@ public class RobotContainer {
 		driverController.start().onTrue(new ZeroGyroCommand(driveSubsystem));
 
 		operatorController.leftTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, true));
-		operatorController.leftTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, false));
+		operatorController.rightTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, false));
 
 		//operatorController.leftTrigger()
 		//		.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1, false));

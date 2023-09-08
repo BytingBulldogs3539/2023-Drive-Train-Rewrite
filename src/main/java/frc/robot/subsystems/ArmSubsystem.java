@@ -64,7 +64,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	Arm armPosition = Arm.intake;
 	Sides side = Sides.front;
-	private Wrist wristOrrientation = Wrist.cube;
+	private Wrist wristOrientation = Wrist.cube;
 
 	ArmTrajectoryGenerator trajectoryHandler = new ArmTrajectoryGenerator(ElevatorConstants.maxArmVelocity,
 			ElevatorConstants.maxArmAcceleration, ElevatorConstants.maxArmRotationVelocity,
@@ -201,6 +201,7 @@ public class ArmSubsystem extends SubsystemBase {
 		ElevatorConstants.ElevatorRotationMagnetOffset = -rotationEncoder.getAbsolutePosition();
 		RobotContainer.elevatorConstants.save();
 		rotationEncoder.configMagnetOffset(ElevatorConstants.ElevatorRotationMagnetOffset);
+		rotationEncoder.setPosition(0.0);
 	}
 
 	public void zeroWristOffset() {
@@ -212,6 +213,7 @@ public class ArmSubsystem extends SubsystemBase {
 		ElevatorConstants.WristRotationMagnetOffset = -wristEncoder.getAbsolutePosition();
 		RobotContainer.elevatorConstants.save();
 		wristEncoder.configMagnetOffset(ElevatorConstants.WristRotationMagnetOffset);
+		wristEncoder.setPosition(0);
 	}
 
 	public boolean getIntakeSensor() {
@@ -219,13 +221,12 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public void setWristOrientation(Wrist orientation) {
-		if (getElevatorRotationAngle().getDegrees() > ElevatorConstants.IntakeLimitMax) {
-			this.wristOrrientation = orientation;
-		}
+		this.wristOrientation = orientation;
+
 	}
 
 	public void setWristOrientationOverride(Wrist orientation) {
-		this.wristOrrientation = orientation;
+		this.wristOrientation = orientation;
 	}
 
 	public void setSide(Sides side) {
@@ -233,7 +234,7 @@ public class ArmSubsystem extends SubsystemBase {
 	}
 
 	public Wrist getWristOrientation() {
-		return wristOrrientation;
+		return wristOrientation;
 	}
 
 	public Sides getSide() {
@@ -300,7 +301,7 @@ public class ArmSubsystem extends SubsystemBase {
 		Translation2d pos = new Translation2d();
 		boolean orient = orientWrist();
 		if (side == Sides.front) {
-			if (wristOrrientation == Wrist.cone) {
+			if (wristOrientation == Wrist.cone) {
 				if (armPosition == Arm.intake && orient) {
 					pos = new Translation2d(ElevatorConstants.frontCubeIntakeX, ElevatorConstants.frontCubeIntakeY);
 				} else if (armPosition == Arm.intake) {
@@ -320,7 +321,7 @@ public class ArmSubsystem extends SubsystemBase {
 					pos = new Translation2d(ElevatorConstants.frontConeGroundX,
 							ElevatorConstants.frontConeGroundY);
 				}
-			} else if (wristOrrientation == Wrist.cube) {
+			} else if (wristOrientation == Wrist.cube) {
 				if (armPosition == Arm.intake && orient) {
 					pos = new Translation2d(ElevatorConstants.frontCubeIntakeX, ElevatorConstants.frontCubeIntakeY);
 				} else if (armPosition == Arm.intake) {
@@ -343,7 +344,7 @@ public class ArmSubsystem extends SubsystemBase {
 				}
 			}
 		} else if (side == Sides.back) {
-			if (wristOrrientation == Wrist.cone) {
+			if (wristOrientation == Wrist.cone) {
 				if (armPosition == Arm.intake) {
 					pos = new Translation2d(ElevatorConstants.backConeIntakeX, ElevatorConstants.backConeIntakeY);
 				} else if (armPosition == Arm.low) {
@@ -362,7 +363,7 @@ public class ArmSubsystem extends SubsystemBase {
 					pos = new Translation2d(ElevatorConstants.backConeIntakeX, ElevatorConstants.backConeIntakeY);
 
 				}
-			} else if (wristOrrientation == Wrist.cube) {
+			} else if (wristOrientation == Wrist.cube) {
 				if (armPosition == Arm.intake) {
 					pos = new Translation2d(ElevatorConstants.backCubeIntakeX, ElevatorConstants.backCubeIntakeY);
 				} else if (armPosition == Arm.low) {
@@ -407,28 +408,32 @@ public class ArmSubsystem extends SubsystemBase {
 	public boolean orientWrist() {
 
 		int wristAngle = 0;
-		if (wristOrrientation == Wrist.cube && side == Sides.front) {
+		if (wristOrientation == Wrist.cube && side == Sides.front) {
 			wristAngle = 0;
 		}
-		if (wristOrrientation == Wrist.cube && side == Sides.back) {
+		if (wristOrientation == Wrist.cube && side == Sides.back) {
 			wristAngle = 180;
 		}
-		if (wristOrrientation == Wrist.cone && side == Sides.back) {
+		if (wristOrientation == Wrist.cone && side == Sides.back) {
 			wristAngle = 0;
 		}
-		if (wristOrrientation == Wrist.cone && side == Sides.front) {
+		if (wristOrientation == Wrist.cone && side == Sides.front) {
 			wristAngle = 180;
 		}
-		if (wristOrrientation == Wrist.cone && side == Sides.front && armPosition == Arm.groundIntake) {
+		if (wristOrientation == Wrist.cone && side == Sides.front && armPosition == Arm.groundIntake) {
 			wristAngle = 0;
 		}
-
+		if (wristOrientation == Wrist.cone && side == Sides.front && armPosition == Arm.intake) {
+			wristAngle = 0;
+		}
 		if (wrist.getActiveTrajectoryPosition() == wristAngle) {
 			return true;
 		}
 
 		if (getElevatorRotationAngle().getDegrees() > ElevatorConstants.IntakeLimitMax) {
 			wrist.set(ControlMode.MotionMagic, wristAngle);
+			// wrist.set(ControlMode.MotionMagic, 0);
+
 			return true;
 		} else {
 			return false;

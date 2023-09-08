@@ -22,9 +22,9 @@ import frc.robot.subsystems.ArmSubsystem.Wrist;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class BlueConeCubeHigh extends SequentialCommandGroup {
+public class RedConeCubeHigh extends SequentialCommandGroup {
 
-  MPLoader loader = new MPLoader("BlueConeCubeHigh.txt", false);
+  MPLoader loader = new MPLoader("RedConeCubeHigh.txt", false);
   private Command[] sequence = {
       new SetVision(false),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
@@ -55,7 +55,7 @@ public class BlueConeCubeHigh extends SequentialCommandGroup {
   };
 
   /** Creates a new ConeCube. */
-  public BlueConeCubeHigh() {
+  public RedConeCubeHigh() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(sequence);

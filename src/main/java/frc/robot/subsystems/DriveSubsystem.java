@@ -207,7 +207,7 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveController.getModules()[0].setCANcoderOffset(DriveConstants.FLSteerOffset);
 		swerveController.getModules()[1].setCANcoderOffset(DriveConstants.FRSteerOffset);
 		swerveController.getModules()[2].setCANcoderOffset(DriveConstants.BLSteerOffset);
-		swerveController.getModules()[3].setCANcoderOffset(DriveConstants.FRSteerOffset);
+		swerveController.getModules()[3].setCANcoderOffset(DriveConstants.BRSteerOffset);
 	}
 
 	@Override

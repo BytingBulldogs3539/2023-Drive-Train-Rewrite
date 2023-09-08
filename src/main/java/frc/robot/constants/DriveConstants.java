@@ -35,7 +35,7 @@ public class DriveConstants extends BBConstants{
 	public static double drivekD = 0.008;
 	public static double driveSpeedMultiplier = 0.5;
 	public static double rotationSpeedMultiplier = 0.2;
-	public static double turboRotationSpeedMultiplier = .25;
-	public static double slowSpeedMultiplier = .25;
-	public static double slowRotationSpeedMultiplier = .125;
+	public static double turboRotationSpeedMultiplier = 0.25;
+	public static double slowSpeedMultiplier = 0.25;
+	public static double slowRotationSpeedMultiplier = 0.125;
 }

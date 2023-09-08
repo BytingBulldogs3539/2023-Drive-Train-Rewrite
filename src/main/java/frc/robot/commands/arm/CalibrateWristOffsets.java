@@ -17,14 +17,14 @@ public class CalibrateWristOffsets extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  boolean isFinshed = false;
+  boolean isFinished = false;
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
 
     if (DriverStation.isEnabled()) {
-      isFinshed = true;
+      isFinished = true;
       DriverStation.reportError("Robot must be disabled to calibrate the wrist", false);
     }
     if (DriverStation.isDisabled()) {
@@ -56,6 +56,6 @@ public class CalibrateWristOffsets extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return isFinished();
+    return isFinished;
   }
 }

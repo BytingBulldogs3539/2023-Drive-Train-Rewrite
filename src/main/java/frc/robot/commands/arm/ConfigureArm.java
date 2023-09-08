@@ -5,10 +5,12 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Arm;
 import frc.robot.subsystems.ArmSubsystem.Sides;
 import frc.robot.subsystems.ArmSubsystem.Wrist;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 public class ConfigureArm extends CommandBase {
   /** Creates a new SetArmHeight. */
@@ -31,6 +33,12 @@ public class ConfigureArm extends CommandBase {
     elevSub.setSide(side);
     elevSub.setArmLevel(position);
     elevSub.setWristOrientationOverride(orientation);
+    if(orientation == Wrist.cone){
+      RobotContainer.ledSubsystem.setLEDs(LEDState.CONE);
+    }
+    if(orientation == Wrist.cube){
+      RobotContainer.ledSubsystem.setLEDs(LEDState.CUBE);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.

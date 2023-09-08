@@ -42,7 +42,7 @@ public class VisionSubsystem extends Thread {
     PhotonPoseEstimator rightPhotonPoseEstimator;
     Optional<EstimatedRobotPose> resultLeft;
     Optional<EstimatedRobotPose> resultRight;
-    boolean useVision = false;
+    boolean useVision = true;
     double leftLastTimeStamp = 0;
     double rightLastTimeStamp = 0;
 
@@ -121,6 +121,8 @@ public class VisionSubsystem extends Thread {
         rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
     }
 
+    Alliance lastAlliance = Alliance.Invalid;
+
     @Override
     public void run() {
         /* Run as fast as possible, our signals will control the timing */
@@ -129,11 +131,15 @@ public class VisionSubsystem extends Thread {
 
             // Vision Calculations
 
-            if (DriverStation.getAlliance() == Alliance.Blue)
+            if (DriverStation.getAlliance() == Alliance.Blue && lastAlliance!=Alliance.Blue)
                 aprilTagFieldLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+                leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
+                rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
 
-            if (DriverStation.getAlliance() == Alliance.Red)
+            if (DriverStation.getAlliance() == Alliance.Red && lastAlliance!=Alliance.Red)
                 aprilTagFieldLayout.setOrigin(OriginPosition.kRedAllianceWallRightSide);
+                leftPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
+                rightPhotonPoseEstimator.setFieldTags(aprilTagFieldLayout);
 
             this.resultLeft = getEstimatedLeftGlobalPose();
             this.resultRight = getEstimatedRightGlobalPose();
@@ -144,12 +150,13 @@ public class VisionSubsystem extends Thread {
                 if (resultLeft.isPresent()) {
                     EstimatedRobotPose camPoseLeft = resultLeft.get();
                     if (camPoseLeft.timestampSeconds != leftLastTimeStamp) {
+                        logger.recordOutput("/DriveTrain/LeftCamPose", camPoseLeft.estimatedPose.toPose2d());
                         synchronized (driveSub.swerveController.m_odometry) {
+                            
                             if (camPoseLeft.estimatedPose.toPose2d().getX() < visioncutoff) {
                                 driveSub.swerveController.m_odometry.addVisionMeasurement(
                                         camPoseLeft.estimatedPose.toPose2d(), camPoseLeft.timestampSeconds);
 
-                                logger.recordOutput("/DriveTrain/LeftCamPose", camPoseLeft.estimatedPose.toPose2d());
 
                             }
                         }
@@ -159,11 +166,9 @@ public class VisionSubsystem extends Thread {
                 if (resultRight.isPresent()) {
                     EstimatedRobotPose camPoseRight = resultRight.get();
                     if (camPoseRight.timestampSeconds != rightLastTimeStamp) {
+                        logger.recordOutput("/DriveTrain/RightCamPose", camPoseRight.estimatedPose.toPose2d());
                         synchronized (driveSub.swerveController.m_odometry) {
-                            // swerveController.m_odometry.setVisionMeasurementStdDevs(VecBuilder.fill(0.5,
-                            // 0.5, Units.degreesToRadians(10));
                             if (camPoseRight.estimatedPose.toPose2d().getX() < visioncutoff) {
-                                logger.recordOutput("/DriveTrain/RightCamPose", camPoseRight.estimatedPose.toPose2d());
                                 driveSub.swerveController.m_odometry.addVisionMeasurement(
                                         camPoseRight.estimatedPose.toPose2d(), camPoseRight.timestampSeconds);
                             }
