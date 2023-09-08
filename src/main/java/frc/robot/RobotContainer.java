@@ -91,7 +91,7 @@ public class RobotContainer {
 		operatorController.povUp().onTrue(new SetArmHeight(armSubsystem, Arm.cubeLowIntake));
 		
 
-		operatorController.rightBumper().onTrue(new FlipWrist(armSubsystem));
+		operatorController.rightBumper().onTrue(new FlipWrist(armSubsystem, ledSubsystem));
 
 		SmartDashboard.putData(new DisableBreakMode(armSubsystem));
 	}

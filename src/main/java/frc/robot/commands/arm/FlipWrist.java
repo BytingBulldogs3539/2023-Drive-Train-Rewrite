@@ -6,14 +6,18 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 public class FlipWrist extends CommandBase {
   /** Creates a new FlipWrist. */
   ArmSubsystem elevSub;
+  LEDSubsystem ledSub;
 
-  public FlipWrist(ArmSubsystem elevSub) {
+  public FlipWrist(ArmSubsystem elevSub, LEDSubsystem ledSub) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevSub = elevSub;
+    this.ledSub = ledSub;
   }
 
   // Called when the command is initially scheduled.
@@ -21,8 +25,10 @@ public class FlipWrist extends CommandBase {
   public void initialize() {
     if (elevSub.getWristOrientation() == ArmSubsystem.Wrist.cube) {
       elevSub.setWristOrientation(ArmSubsystem.Wrist.cone);
+      this.ledSub.setLEDs(LEDState.CONE);
     } else if (elevSub.getWristOrientation() == ArmSubsystem.Wrist.cone) {
       elevSub.setWristOrientation(ArmSubsystem.Wrist.cube);
+      this.ledSub.setLEDs(LEDState.CUBE);
     }
   }
 

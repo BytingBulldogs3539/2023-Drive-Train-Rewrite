@@ -22,7 +22,6 @@ public class LEDSubsystem extends SubsystemBase{
         CONE,
         CUBE
     }
-    Piece pickedUp = null;
 
     final double FLASH_SPEED = 0.25;
     final int NUM_LEDS = 56;
@@ -61,8 +60,7 @@ public class LEDSubsystem extends SubsystemBase{
     public void intake() {
         if (!enabled) return;
 
-        if (elevatorSub.getWristOrientation() == Wrist.cone
-              || elevatorSub.getArmLevel() == Arm.groundIntake) {
+        if (elevatorSub.getWristOrientation() == Wrist.cone) {
             setLEDs(LEDState.FLASH_CONE);
         } else {
             setLEDs(LEDState.FLASH_CUBE);
@@ -72,13 +70,10 @@ public class LEDSubsystem extends SubsystemBase{
     public void extake() {
         if (!enabled) return;
 
-        if (elevatorSub.getWristOrientation() == Wrist.cone
-              || elevatorSub.getArmLevel() == Arm.groundIntake) {
+        if (elevatorSub.getWristOrientation() == Wrist.cone) {
             setLEDs(LEDState.FLASH_CONE);
-            pickedUp = null;
         } else {
             setLEDs(LEDState.FLASH_CUBE);
-            pickedUp = null;
         }
     }
 

@@ -47,6 +47,7 @@ public class IntakeCommand extends CommandBase {
     @Override
     public void initialize() {
         intakeSub.setIntakeSpeed(intakeSpeed);
+        
 
     }
 

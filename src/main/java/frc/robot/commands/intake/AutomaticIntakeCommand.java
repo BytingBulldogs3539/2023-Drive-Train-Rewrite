@@ -90,6 +90,11 @@ public class AutomaticIntakeCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         intakeSub.setIntakeSpeed(0);
+
+        if(initialWrist==Wrist.cone)
+            ledSub.setLEDs(LEDState.CONE);
+        else
+            ledSub.setLEDs(LEDState.CUBE);
     }
 
     // Returns true when the command should end.
