@@ -40,6 +40,7 @@ public class BlueHighConeBack extends SequentialCommandGroup {
                     new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
 
             ),
+            new SetVision(true)
     };
 
     public BlueHighConeBack() {

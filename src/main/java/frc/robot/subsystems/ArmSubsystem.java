@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -162,6 +163,7 @@ public class ArmSubsystem extends SubsystemBase {
 		wrist.configSelectedFeedbackCoefficient(0.087890625);
 		wrist.configMotionAcceleration(250);
 		wrist.configMotionCruiseVelocity(500);
+		wrist.setStatusFramePeriod(StatusFrame.Status_10_MotionMagic, 10);
 		wristEncoder.setPosition(wristEncoder.getAbsolutePosition());
 
 		// armTab.addNumber("Arm X", () -> {
@@ -405,6 +407,8 @@ public class ArmSubsystem extends SubsystemBase {
 	 * @return returns true if wrist is able to be oriented in the correct
 	 *         orientation else false
 	 */
+
+	int lastWristAngle = 0;
 	public boolean orientWrist() {
 
 		int wristAngle = 0;
@@ -426,12 +430,13 @@ public class ArmSubsystem extends SubsystemBase {
 		if (wristOrientation == Wrist.cone && side == Sides.front && armPosition == Arm.intake) {
 			wristAngle = 0;
 		}
-		if (wrist.getActiveTrajectoryPosition() == wristAngle) {
+		if (lastWristAngle == wristAngle) {
 			return true;
 		}
 
 		if (getElevatorRotationAngle().getDegrees() > ElevatorConstants.IntakeLimitMax) {
 			wrist.set(ControlMode.MotionMagic, wristAngle);
+			lastWristAngle = wristAngle;
 			// wrist.set(ControlMode.MotionMagic, 0);
 
 			return true;
@@ -444,7 +449,7 @@ public class ArmSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		orientWrist();
+		//orientWrist();
 		// SmartDashboard.putBoolean("Cube Mode", (wristOrrientation == Wrist.cube) ?
 		// true : false);
 		// SmartDashboard.putData("RealArm", realArmMech);
