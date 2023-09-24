@@ -26,7 +26,7 @@ public class RedConeCubeHigh extends SequentialCommandGroup {
 
   MPLoader loader = new MPLoader("RedConeCubeHigh.txt", false);
   private Command[] sequence = {
-      new SetVision(false),
+      new SetVision(true),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
       new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.high, Wrist.cone),
       new WaitCommand(2),
