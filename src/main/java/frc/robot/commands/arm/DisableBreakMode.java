@@ -32,6 +32,7 @@ public class DisableBreakMode extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     elevSub.setBreakMode(true);
+    elevSub.zeroArmExtenstion();
   }
 
   // Returns true when the command should end.

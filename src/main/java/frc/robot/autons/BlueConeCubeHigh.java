@@ -28,6 +28,8 @@ public class BlueConeCubeHigh extends SequentialCommandGroup {
   private Command[] sequence = {
       new SetVision(true),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
+      new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
+      new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
       new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.high, Wrist.cone),
       new WaitCommand(2),
       new IntakeCommand(RobotContainer.intakeSubsystem, RobotContainer.armSubsystem, RobotContainer.ledSubsystem, 1)

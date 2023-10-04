@@ -31,6 +31,7 @@ public class AutoBalance extends CommandBase {
   public void execute() {
 
     Rotation2d gyroAngle = sub.getGyroscopeRotation();
+    System.out.println(sub.getPitch());
     if (sub.getPitch() > 9.0) {
       sub.drive(
         ChassisSpeeds.fromFieldRelativeSpeeds(

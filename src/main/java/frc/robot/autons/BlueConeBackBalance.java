@@ -25,7 +25,7 @@ import frc.robot.subsystems.ArmSubsystem.Wrist;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class BlueConeBackBalance extends SequentialCommandGroup {
     /** Creates a new SplineAuton. */
-    MPLoader loader = new MPLoader("BlueConeBackBalace.txt", false);
+    MPLoader loader = new MPLoader("BlueConeBackBalance.txt", false);
     private Command[] sequence = {
             // Setup
             new SetVision(false),
@@ -42,7 +42,7 @@ public class BlueConeBackBalance extends SequentialCommandGroup {
                     new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
 
             ),
-            new AutoBalance(RobotContainer.driveSubsystem, 2.5).withTimeout(5)
+            new AutoBalance(RobotContainer.driveSubsystem, .5).withTimeout(5)
 
     };
 

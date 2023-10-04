@@ -22,42 +22,63 @@ import frc.robot.subsystems.ArmSubsystem.Wrist;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class RedConeCubeHigh extends SequentialCommandGroup {
+public class Blue2_5 extends SequentialCommandGroup {
 
-  MPLoader loader = new MPLoader("RedConeCubeHigh.txt", false);
+  MPLoader loader = new MPLoader("Blue2_5.txt", false);
   private Command[] sequence = {
       new SetVision(true),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
       new InstantCommand(() -> RobotContainer.driveSubsystem.resetRobotPose(loader.getFirstTrajectory())),
       new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.high, Wrist.cone),
-      new WaitCommand(2),
+      new WaitCommand(1.8),
       new IntakeCommand(RobotContainer.intakeSubsystem, RobotContainer.armSubsystem, RobotContainer.ledSubsystem, 1)
           .withTimeout(0.6),
+      
+          new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.middle, Wrist.cone),
 
       new ParallelCommandGroup(
           new SequentialCommandGroup(
-            new WaitCommand(1),
+              new WaitCommand(1),
               new ConfigureArm(RobotContainer.armSubsystem, Sides.back, Arm.intake, Wrist.cube)),
           new SequentialCommandGroup(
               new WaitCommand(2),
               new IntakeCommand(RobotContainer.intakeSubsystem, RobotContainer.armSubsystem,
-                  RobotContainer.ledSubsystem, 1).withTimeout(2.4)),
+                  RobotContainer.ledSubsystem, 1).withTimeout(1.5)),
           new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
 
       ),
       new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.high, Wrist.cube),
-      new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+      new ParallelCommandGroup(
+        new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory()),
+        new SequentialCommandGroup( new WaitCommand(.75), 
+        new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.high, Wrist.cube)
+        ), 
+        new SequentialCommandGroup(
+          new WaitCommand(3),
       new IntakeCommand(RobotContainer.intakeSubsystem, RobotContainer.armSubsystem,
-          RobotContainer.ledSubsystem, -1).withTimeout(1),
-      new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.intake, Wrist.cube)
+          RobotContainer.ledSubsystem, -1).withTimeout(.7))
+
+
+      ),
+      new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.middle, Wrist.cube),
+      new ParallelCommandGroup(
+        new SequentialCommandGroup(
+              new WaitCommand(1),
+              new ConfigureArm(RobotContainer.armSubsystem, Sides.back, Arm.intake, Wrist.cube)),
+          new SequentialCommandGroup(
+              new WaitCommand(2.75),
+              new IntakeCommand(RobotContainer.intakeSubsystem, RobotContainer.armSubsystem,
+                  RobotContainer.ledSubsystem, 1).withTimeout(0.75)),
+          new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())),
+          new ConfigureArm(RobotContainer.armSubsystem, Sides.front, Arm.intake, Wrist.cube)
       // new FollowTrajectory(RobotContainer.driveSubsystem,
       // loader.getNextTrajectory())
 
   };
 
   /** Creates a new ConeCube. */
-  public RedConeCubeHigh() {
+  public Blue2_5() {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(sequence);

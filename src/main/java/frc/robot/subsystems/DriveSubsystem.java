@@ -32,6 +32,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -123,7 +124,6 @@ public class DriveSubsystem extends SubsystemBase {
 		swerveController = new CTRSwerveDrivetrain(tab, driveTrainConstants, frontLeft, frontRight, backLeft,
 				backRight);
 
-		swerveController.setGyro(180);
 
 		DrivetrainFeedforwardConstants FEEDFORWARD_CONSTANTS = new DrivetrainFeedforwardConstants(
 				DriveConstants.TranslationkV,
@@ -153,6 +153,8 @@ public class DriveSubsystem extends SubsystemBase {
 		tab.addNumber("Chassis Y Speed", () -> m_chassisSpeeds.vyMetersPerSecond);*/
 
 		setDefaultCommand(new DriveCommand(this));
+
+		resetRobotPose(new Pose2d(new Translation2d(),Rotation2d.fromDegrees(180)));
 	}
 
 	public HolonomicMotionProfiledTrajectoryFollower getFollower() {
@@ -172,7 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void resetRobotRotation(Rotation2d rot) {
-		swerveController.getPigeon2().setYaw(rot.getDegrees());
+		swerveController.resetPosition(new Pose2d(swerveController.getPoseMeters().getTranslation(), rot));
 		
 	}
 

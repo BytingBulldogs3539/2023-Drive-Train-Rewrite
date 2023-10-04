@@ -43,7 +43,7 @@ public class DriveCommand extends CommandBase {
 		if (RobotContainer.driverController.rightBumper().getAsBoolean()) {
 			rot = Rotation2d.fromDegrees(0);
 		} else {
-			rot = Rotation2d.fromDegrees(driveSubsystem.swerveController.getPigeon2().getYaw().getValue());
+			rot = RobotContainer.driveSubsystem.getPose2d().getRotation();
 		}
 		ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
 				joystickLeft.getX() * RobotContainer.driveSubsystem.swerveController.getMaxVelocity()

@@ -194,6 +194,10 @@ public class ArmSubsystem extends SubsystemBase {
 
 	}
 
+	public void zeroArmExtenstion() {
+		extensionMotor.setSelectedSensorPosition(0);
+	}
+
 	public void zeroArmOffset() {
 		rotationEncoder.configMagnetOffset(0);
 

@@ -60,6 +60,8 @@ public class RobotContainer {
 		chooser.addOption("RightBlueHighConeBack", new RightBlueHighConeBack());
 		chooser.addOption("BlueConeBackBalance", new BlueConeBackBalance());
 		chooser.addOption("RedConeBackBalance", new RedConeBackBalance());
+		chooser.addOption("Blue2_5", new Blue2_5());
+
 
 		SmartDashboard.putData(chooser);
 	}
