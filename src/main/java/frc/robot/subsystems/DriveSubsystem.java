@@ -166,18 +166,22 @@ public class DriveSubsystem extends SubsystemBase {
 	}
 
 	public void resetRobotPose(Trajectory trajectory) {
-		swerveController.resetPosition(trajectory.calculate(0.0).getPathState().getPose2d());
+		synchronized (swerveController.m_odometry) {
+			swerveController.resetPosition(trajectory.calculate(0.0).getPathState().getPose2d());
+		}
 	}
 
 	public void resetRobotPose(Pose2d pose) {
+		synchronized (swerveController.m_odometry) {
 		swerveController.resetPosition(pose);
 	}
-
+	}
 	public void resetRobotRotation(Rotation2d rot) {
+		synchronized (swerveController.m_odometry) {
 		swerveController.resetPosition(new Pose2d(swerveController.getPoseMeters().getTranslation(), rot));
 		
 	}
-
+	}
 	public Pose2d getPose2d() {
 		return swerveController.getPoseMeters();
 	}
