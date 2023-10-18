@@ -30,7 +30,7 @@ public class AutoBalance extends CommandBase {
   @Override
   public void execute() {
 
-    Rotation2d gyroAngle = sub.getGyroscopeRotation();
+    Rotation2d gyroAngle = sub.getPose2d().getRotation();
     System.out.println(sub.getPitch());
     if (sub.getPitch() > 9.0) {
       sub.drive(

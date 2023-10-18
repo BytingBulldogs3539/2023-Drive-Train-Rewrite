@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -38,11 +39,10 @@ public class RobotContainer {
 	public static SendableChooser<Command> chooser = new SendableChooser<Command>();
 
 	public static LogController logController = new LogController(
-		driveSubsystem, armSubsystem, intakeSubsystem, ledSubsystem
-	);
+			driveSubsystem, armSubsystem, intakeSubsystem, ledSubsystem);
 
 	public RobotContainer() {
-		
+
 		DriverStation.silenceJoystickConnectionWarning(true);
 		putAutons();
 		configureBindings();
@@ -62,11 +62,9 @@ public class RobotContainer {
 		chooser.addOption("RedConeBackBalance", new RedConeBackBalance());
 		chooser.addOption("Blue2_5", new Blue2_5());
 		chooser.addOption("Red2_5", new Red2_5());
-	//	chooser.addOption("Blue2_Balance", new Blue2_Balance());
-	chooser.addOption("BlueConeOverBalance", new BlueConeOverBalance());
-
-
-
+		// chooser.addOption("Blue2_Balance", new Blue2_Balance());
+		chooser.addOption("BlueConeOverBalance", new BlueConeOverBalance());
+		chooser.addOption("RedConeOverBalance", new RedConeOverBalance());
 
 		SmartDashboard.putData(chooser);
 	}
@@ -78,20 +76,24 @@ public class RobotContainer {
 
 		driverController.start().onTrue(new ZeroGyroCommand(driveSubsystem));
 
-		operatorController.leftTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, true));
-		operatorController.rightTrigger().whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, false));
+		operatorController.leftTrigger()
+				.whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, true));
+		operatorController.rightTrigger()
+				.whileTrue(new AutomaticIntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, false));
 
-		//operatorController.leftTrigger()
-		//		.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1, false));
+		// operatorController.leftTrigger()
+		// .whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, 1,
+		// false));
 
-		//operatorController.rightTrigger()
-		//		.whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1, false));
+		// operatorController.rightTrigger()
+		// .whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1,
+		// false));
 
 		operatorController.leftBumper().onTrue(new SetArmSide(armSubsystem, Sides.front));
 
 		driverController.y().onTrue(new SetLEDs(ledSubsystem, LEDState.CONE));
 		driverController.x().onTrue(new SetLEDs(ledSubsystem, LEDState.CUBE));
-		//driverController.b().whileTrue(new AutoPoleAlign(ledSubsystem));
+		// driverController.b().whileTrue(new AutoPoleAlign(ledSubsystem));
 
 		operatorController.a().onTrue(new SetArmHeight(armSubsystem, Arm.intake));
 		operatorController.b().onTrue(new SetArmHeight(armSubsystem, Arm.low));
@@ -100,7 +102,6 @@ public class RobotContainer {
 		operatorController.povRight().onTrue(new SetArmHeight(armSubsystem, Arm.HumanPlayer));
 		operatorController.povDown().onTrue(new ConfigureArm(armSubsystem, Sides.front, Arm.groundIntake, Wrist.cone));
 		operatorController.povUp().onTrue(new SetArmHeight(armSubsystem, Arm.cubeLowIntake));
-		
 
 		operatorController.rightBumper().onTrue(new FlipWrist(armSubsystem, ledSubsystem));
 

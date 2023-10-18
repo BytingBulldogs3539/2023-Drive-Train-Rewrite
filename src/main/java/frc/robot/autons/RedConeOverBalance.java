@@ -23,9 +23,9 @@ import frc.robot.subsystems.ArmSubsystem.Wrist;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class BlueConeOverBalance extends SequentialCommandGroup {
+public class RedConeOverBalance extends SequentialCommandGroup {
     /** Creates a new SplineAuton. */
-    MPLoader loader = new MPLoader("BlueConeOverBalance.txt", false);
+    MPLoader loader = new MPLoader("RedConeOverBalance.txt", false);
     private Command[] sequence = {
             // Setup
             new SetVision(false),
@@ -49,7 +49,7 @@ public class BlueConeOverBalance extends SequentialCommandGroup {
 
     };
 
-    public BlueConeOverBalance() {
+    public RedConeOverBalance() {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
         addCommands(sequence);
