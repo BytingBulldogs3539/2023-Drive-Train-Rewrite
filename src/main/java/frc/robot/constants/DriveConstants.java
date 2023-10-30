@@ -9,14 +9,14 @@ public class DriveConstants extends BBConstants{
 	}
 	public static double wheelTrackWidth = 0.5969;
 	public static double wheelTrackLength = 0.5969;
-	public static double wheelDiameter = 0.1016;
+	public static double wheelDiameter = 0.1028;
 	public static double driveGearReduction = 6.55;
 	public static double steerGearReduction = 10.286;
 	public static double swerveModuleSlipCurrent = 400.0;
-	public static double FLSteerOffset = -0.459473;
-	public static double FRSteerOffset = -0.625244;
-	public static double BLSteerOffset = -0.442139;
-	public static double BRSteerOffset = -0.252197;
+	public static double FLSteerOffset = -3.458984375;
+	public static double FRSteerOffset = -2.622314453125;
+	public static double BLSteerOffset = 1.556884765625;
+	public static double BRSteerOffset = -2.252197265625;
 	public static double TranslationkP = 20.0;
 	public static double TranslationkI = 0.0;
 	public static double TranslationkD = 0.0;
@@ -36,6 +36,6 @@ public class DriveConstants extends BBConstants{
 	public static double driveSpeedMultiplier = 0.5;
 	public static double rotationSpeedMultiplier = 0.2;
 	public static double turboRotationSpeedMultiplier = 0.25;
-	public static double slowSpeedMultiplier = 0.25;
-	public static double slowRotationSpeedMultiplier = 0.125;
+	public static double slowSpeedMultiplier = 0.15;
+	public static double slowRotationSpeedMultiplier = 0.05;
 }

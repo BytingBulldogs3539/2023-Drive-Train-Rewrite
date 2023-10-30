@@ -13,7 +13,7 @@ public class ElevatorConstants extends BBConstants{
 	public static double maxArmRotationVelocity = 600.0;
 	public static double maxArmRotationAcceleration = 600.0;
 	public static double ElevatorConversionRatio = 0.0039814506849375;
-	public static double ElevatorRotationMagnetOffset = -48.867;
+	public static double ElevatorRotationMagnetOffset = -148.77734375;
 	public static double ElevatorKp = 0.1;
 	public static double ElevatorKi = 0.0;
 	public static double ElevatorKd = 0.0;
@@ -22,7 +22,7 @@ public class ElevatorConstants extends BBConstants{
 	public static double ElevatorRotationKd = 0.0;
 	public static double ElevatorMinExtension = 78.74;
 	public static double ElevatorMaxExtension = 157.4;
-	public static double WristRotationMagnetOffset = 117.07;
+	public static double WristRotationMagnetOffset = -82.705078125;
 	public static double WristKp = 50.0;
 	public static double WristKi = 0.0;
 	public static double WristKd = 0.0;
