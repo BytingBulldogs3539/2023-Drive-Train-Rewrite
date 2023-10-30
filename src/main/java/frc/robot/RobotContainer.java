@@ -51,11 +51,11 @@ public class RobotContainer {
 
 	private void putAutons() {
 		chooser.addOption("Follow Simple Line", new Follow_Simple_Line());
-		chooser.setDefaultOption("Follow Simple Spline", new SplineAuton());
+		chooser.addOption("Follow Simple Spline", new SplineAuton());
 		chooser.addOption("BlueConeCubeHigh", new BlueConeCubeHigh());
 		chooser.addOption("RedConeCubeHigh", new RedConeCubeHigh());
 		chooser.addOption("BlueHighConeBack", new BlueHighConeBack());
-		chooser.addOption("RedHighConeBack", new RedHighConeBack());
+		chooser.setDefaultOption("RedHighConeBack", new RedHighConeBack());
 		chooser.addOption("LeftRedHighConeBack", new LeftRedHighConeBack());
 		chooser.addOption("RightBlueHighConeBack", new RightBlueHighConeBack());
 		chooser.addOption("BlueConeBackBalance", new BlueConeBackBalance());
@@ -65,6 +65,10 @@ public class RobotContainer {
 		// chooser.addOption("Blue2_Balance", new Blue2_Balance());
 		chooser.addOption("BlueConeOverBalance", new BlueConeOverBalance());
 		chooser.addOption("RedConeOverBalance", new RedConeOverBalance());
+		chooser.addOption("BlueConeCubeBump", new BlueConeCubeBump());
+		chooser.addOption("RedConeCubeBump", new RedConeCubeBump());
+		chooser.addOption("Out3", new Out3());
+
 
 		SmartDashboard.putData(chooser);
 	}
