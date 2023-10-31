@@ -4,6 +4,9 @@
 
 package frc.robot.commands.drivetrain;
 
+import org.frcteam3539.CTRE_Swerve_Lib.control.PidConstants;
+import org.frcteam3539.CTRE_Swerve_Lib.control.PidController;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,9 +19,20 @@ public class DriveCommand extends CommandBase {
 	/** Creates a new DriveCommand. */
 	DriveSubsystem driveSubsystem;
 
+	private PidController rotationController;
+
+
 	public DriveCommand(DriveSubsystem driveSubsystem) {
 		addRequirements(driveSubsystem);
 		this.driveSubsystem = driveSubsystem;
+
+		rotationController = new PidController(
+            new PidConstants(DriveConstants.RotationkP, DriveConstants.RotationkI, DriveConstants.RotationkD)
+        );
+        rotationController.setInputRange(-Math.PI, Math.PI);
+        rotationController.setOutputRange(-1, 1);
+        rotationController.setContinuous(true);
+
 		// Use addRequirements() here to declare subsystem dependencies.
 	}
 
@@ -73,6 +87,15 @@ public class DriveCommand extends CommandBase {
 					rot);
 
 		}
+		if (RobotContainer.driverController.a().getAsBoolean()) {
+            Double setPoint = 0.0;
+            if (Math.abs(rot.getRadians()) > Math.PI / 2.0) {
+                setPoint = Math.PI;
+            }
+            rotationController.setSetpoint(setPoint);
+			chassisSpeeds = new ChassisSpeeds(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond,rotationController.calculate(rot.getRadians(), .02) / 1.3);
+			
+        }
 
 		driveSubsystem.drive(chassisSpeeds);
 	}

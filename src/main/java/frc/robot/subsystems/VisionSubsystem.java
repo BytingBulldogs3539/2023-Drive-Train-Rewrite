@@ -87,7 +87,7 @@ public class VisionSubsystem extends Thread {
         this.useVision = useVision;
     }
 
-    public void setVisionWeights(double visionX, double visionY, int visionDeg) {
+    public void setVisionWeights(double visionX, double visionY, double visionDeg) {
         driveSub.swerveController.m_odometry.setVisionMeasurementStdDevs(
                 VecBuilder.fill(visionX, visionY, Units.degreesToRadians(visionDeg)));
     }

@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands.misc;
+package frc.robot.commands.drivetrain;
 
 import org.frcteam3539.CTRE_Swerve_Lib.control.MaxAccelerationConstraint;
 import org.frcteam3539.CTRE_Swerve_Lib.control.MaxVelocityConstraint;
@@ -12,15 +12,10 @@ import org.frcteam3539.CTRE_Swerve_Lib.control.TrajectoryConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.commands.drivetrain.FollowTrajectory;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 
 public class AutoPoleAlign extends CommandBase {
@@ -29,8 +24,7 @@ public class AutoPoleAlign extends CommandBase {
      * nearest pole column
      */
 
-    Command autoAlign;
-    public final double X_DISTANCE = 1.7;
+    public final double X_DISTANCE = 1.80;
     public final double[] RED_POLES = {
             7.51, 6.40, 5.84, 4.72, 4.16, 3.05
     };
@@ -38,17 +32,8 @@ public class AutoPoleAlign extends CommandBase {
             0.52, 1.63, 2.19, 3.31, 3.87, 4.98
     };
 
-    LEDSubsystem ledSub;
-
-    public AutoPoleAlign(LEDSubsystem ledSub) {
-        this.ledSub = ledSub;
-        this.autoAlign = null;
+    public AutoPoleAlign() {
     }
-
-    TrajectoryConstraint[] constraints = new TrajectoryConstraint[] {
-            (TrajectoryConstraint) new MaxAccelerationConstraint(1),
-            (TrajectoryConstraint) new MaxVelocityConstraint(1)
-    };
 
     // Called when the command is initially scheduled.
     @Override
@@ -65,20 +50,23 @@ public class AutoPoleAlign extends CommandBase {
             }
         }
         
-        RobotContainer.visionSubsystem.setVisionWeights(0.2, 0.2, Units.degreesToRadians(10));
 
         // Generate trajectory command to nearest coordinate
-        autoAlign = new FollowTrajectory(RobotContainer.driveSubsystem,
-                new Trajectory(new SimplePathBuilder(RobotContainer.driveSubsystem.getPose2d())
+        RobotContainer.driveSubsystem.getFollower().follow(new Trajectory(
+                new SimplePathBuilder(RobotContainer.driveSubsystem.getPose2d())
                         .lineTo(
-                                new Pose2d(new Translation2d(X_DISTANCE, nearestY), Rotation2d.fromDegrees(180)))
-                        .build(), constraints, .02));
+                                new Pose2d(X_DISTANCE, nearestY, Rotation2d.fromDegrees(180)))
+                        .build(),
+                new TrajectoryConstraint[] {
+                        (TrajectoryConstraint) new MaxAccelerationConstraint(1),
+                        (TrajectoryConstraint) new MaxVelocityConstraint(1)
+                }, .05));
 
         // Indicate vision and start the trajectory command
-        ledSub.saveState();
-        ledSub.setLEDs(LEDState.CLIMBING);
-        autoAlign.schedule();
+        RobotContainer.ledSubsystem.saveState();
+        RobotContainer.ledSubsystem.setLEDs(LEDState.CLIMBING);
     }
+
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
@@ -88,14 +76,13 @@ public class AutoPoleAlign extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        if (!this.autoAlign.isFinished())
-            this.autoAlign.cancel();
-        ledSub.restoreState();
+        RobotContainer.driveSubsystem.getFollower().cancel();
+        RobotContainer.ledSubsystem.restoreState();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return this.autoAlign.isFinished();
+        return RobotContainer.driveSubsystem.getFollower().getCurrentTrajectory().isEmpty();
     }
 }

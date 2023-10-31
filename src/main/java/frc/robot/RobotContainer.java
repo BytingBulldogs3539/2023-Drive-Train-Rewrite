@@ -16,6 +16,7 @@ import frc.robot.subsystems.ArmSubsystem.Wrist;
 import frc.robot.subsystems.LEDSubsystem.LEDState;
 import frc.robot.utilities.LogController;
 import frc.robot.commands.drivetrain.*;
+import frc.robot.commands.drivetrain.AutoPoleAlign;
 import frc.robot.commands.arm.*;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.misc.*;
@@ -92,6 +93,7 @@ public class RobotContainer {
 		// operatorController.rightTrigger()
 		// .whileTrue(new IntakeCommand(intakeSubsystem, armSubsystem, ledSubsystem, -1,
 		// false));
+		driverController.b().whileTrue(new AutoPoleAlign());
 
 		operatorController.leftBumper().onTrue(new SetArmSide(armSubsystem, Sides.front));
 
