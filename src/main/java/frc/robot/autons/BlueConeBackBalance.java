@@ -42,7 +42,7 @@ public class BlueConeBackBalance extends SequentialCommandGroup {
                     new FollowTrajectory(RobotContainer.driveSubsystem, loader.getNextTrajectory())
 
             ),
-            new AutoBalance(RobotContainer.driveSubsystem, .5).withTimeout(5)
+            new AutoBalance(RobotContainer.driveSubsystem, .25).withTimeout(5)
 
     };
 
