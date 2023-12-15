@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.frcteam3539.CTRE_Swerve_Lib.control.HolonomicMotionProfiledTrajectoryFollower;
 import org.frcteam3539.CTRE_Swerve_Lib.control.PidConstants;
 import org.frcteam3539.CTRE_Swerve_Lib.control.Trajectory;
-import org.frcteam3539.CTRE_Swerve_Lib.swerve.CTRSwerveDrivetrain;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.CTRSwerveModule;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveConstantsCreator;
 import org.frcteam3539.CTRE_Swerve_Lib.swerve.SwerveDriveTrainConstants;
@@ -48,6 +47,7 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.drivetrain.DriveCommand;
 import frc.robot.constants.DriveConstants;
 import frc.robot.constants.IDConstants;
+import frc.robot.subsystems.CTRSwerveDrivetrain;
 
 public class DriveSubsystem extends SubsystemBase {
 	/** Creates a new DriveSubsystem. */
